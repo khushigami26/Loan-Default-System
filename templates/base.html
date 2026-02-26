@@ -80,6 +80,9 @@
             themeIcon.classList.add("fa-moon", "far");
             themeText.textContent = "Dark Mode";
           }
+
+          // Dispatch custom event for charts to listen to
+          window.dispatchEvent(new Event('themeChanged'));
         });
       }
     });

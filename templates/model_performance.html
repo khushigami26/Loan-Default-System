@@ -111,8 +111,9 @@
 
 <script>
     // Global Chart config defaults
+    const isDark = document.body.classList.contains('dark-theme');
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-    Chart.defaults.color = '#A3AED0';
+    Chart.defaults.color = isDark ? '#94A3B8' : '#64748B';
 
     const modelData = {
         'lr_sklearn': {
@@ -210,7 +211,7 @@
                     max: 95,
                     grid: {
                         display: true,
-                        color: '#F1F5F9',
+                        color: isDark ? 'rgba(148, 163, 184, 0.1)' : '#F1F5F9',
                         drawBorder: false
                     },
                     ticks: {
@@ -251,6 +252,14 @@
             const keys = ['lr_sklearn', 'rf', 'lr_manual', 'dt'];
             return keys[index] === e.target.value ? '#10B981' : '#3B82F6';
         };
+        accuracyChart.update();
+    });
+
+    // Handle Live Theme Toggle for Charts
+    window.addEventListener('themeChanged', () => {
+        const newIsDark = document.body.classList.contains('dark-theme');
+        accuracyChart.options.scales.y.grid.color = newIsDark ? 'rgba(148, 163, 184, 0.1)' : '#F1F5F9';
+        Chart.defaults.color = newIsDark ? '#94A3B8' : '#64748B';
         accuracyChart.update();
     });
 </script>

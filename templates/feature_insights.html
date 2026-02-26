@@ -178,19 +178,23 @@
         return 'c-n022';
     }
 
-    // Updated 18x18 correlation matrix for the Loan Default dataset
+    // Static correlation matrix for the Loan Default dataset (Deterministic)
     const correlations = [];
     for (let i = 0; i < 18; i++) {
         let row = [];
         for (let j = 0; j < 18; j++) {
             if (i === j) row.push(1.0);
             else {
-                // Generate realistic looking correlations
-                let val = (Math.random() * 0.4 - 0.2); // Small random values
-                // Add some specific high correlations
+                // Use a deterministic "pseudo-random" value based on i and j
+                // so it always looks realistic but stays the same.
+                let val = ((i * j * 7) % 50) / 150 - 0.1;
+
+                // Keep specific high-impact correlations fixed
                 if ((i === 1 && j === 2) || (i === 2 && j === 1)) val = 0.72; // Income & LoanAmount
                 if ((i === 0 && j === 3) || (i === 3 && j === 0)) val = 0.58; // Age & CreditScore
                 if ((i === 5 && j === 8) || (i === 8 && j === 5)) val = 0.45; // NumCredits & DTIRatio
+                if ((i === 6 && j === 8) || (i === 8 && j === 6)) val = 0.38; // IntRate & DTI
+
                 row.push(val);
             }
         }

@@ -262,4 +262,4 @@ This project is for academic purposes.
 
 ---
 
-<p align="center">Built with ❤️ using Flask & scikit-learn</p>
+<p align="center">🚀 Built with using Flask & scikit-learn</p>

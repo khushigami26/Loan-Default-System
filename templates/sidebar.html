@@ -1,0 +1,50 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>Loan Default</h2>
+    <i class="fas fa-times sidebar-close" id="sidebar-close"
+      style="display: none; cursor: pointer; font-size: 1.25rem;"></i>
+  </div>
+  <ul class="sidebar-menu">
+    <li class="{{ 'active' if request.endpoint == 'main.loan_default_dashboard' else '' }}">
+      <a href="{{ url_for('main.loan_default_dashboard') }}">
+        <i class="fas fa-th-large"></i> <span>Dashboard</span>
+      </a>
+    </li>
+    <li class="{{ 'active' if request.endpoint == 'main.loan_default_model_performance' else '' }}">
+      <a href="{{ url_for('main.loan_default_model_performance') }}">
+        <i class="fas fa-chart-line"></i> <span>Model Performance</span>
+      </a>
+    </li>
+    <li class="{{ 'active' if request.endpoint == 'main.loan_default_feature_insights' else '' }}">
+      <a href="{{ url_for('main.loan_default_feature_insights') }}">
+        <i class="fas fa-brain"></i> <span>Feature Insights</span>
+      </a>
+    </li>
+    <li class="{{ 'active' if request.endpoint == 'main.loan' else '' }}">
+      <a href="{{ url_for('main.loan') }}">
+        <i class="fas fa-file-invoice-dollar"></i> <span>Loan Prediction</span>
+      </a>
+    </li>
+    <li class="{{ 'active' if request.endpoint == 'main.prediction_history' else '' }}">
+      <a href="{{ url_for('main.prediction_history') }}">
+        <i class="fas fa-history"></i> <span>Prediction History</span>
+      </a>
+    </li>
+    <li class="{{ 'active' if request.endpoint == 'main.profile' else '' }}">
+      <a href="{{ url_for('main.profile') }}">
+        <i class="fas fa-user-circle"></i> <span>Profile</span>
+      </a>
+    </li>
+    <li>
+      <a id="theme-toggle" style="cursor: pointer;">
+        <i class="far fa-moon" id="theme-icon"></i> <span id="theme-text">Dark Mode</span>
+      </a>
+    </li>
+  </ul>
+  <div class="sidebar-footer">
+    <a href="{{ url_for('auth.logout') }}" class="dark-mode-toggle" style="text-decoration: none; color: #ef4444;">
+      <i class="fas fa-sign-out-alt" style="color: #ef4444; font-size: 1.1rem; margin-right: 0.75rem;"></i> <span
+        style="font-weight: 600;">Logout</span>
+    </a>
+  </div>
+</aside>

@@ -1,0 +1,4 @@
+/* Local overrides to ensure full height and layout */
+    body {
+        background-color: var(--bg-color);
+    }

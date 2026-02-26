@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='model_performance.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    {% include 'sidebar.html' %}
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title">Model Performance</h1>
+        </header>
+
+        <!-- Model Selection -->
+        <div class="card">
+            <div class="model-select-container">
+                <label class="label" style="margin-bottom: 0.75rem;">Select Model</label>
+                <select id="modelSelector" class="model-dropdown">
+                    <option value="lr_sklearn" selected>Sklearn Logistic Regression - {{
+                        "%.2f"|format(lr_sklearn_accuracy * 100) }}% Accuracy</option>
+                    <option value="rf">Random Forest Classifier - {{ "%.2f"|format(rf_accuracy * 100) }}% Accuracy
+                    </option>
+                    <option value="lr_manual">Custom Logistic Regression - {{ "%.2f"|format(lr_manual_accuracy * 100)
+                        }}% Accuracy</option>
+                    <option value="dt">Decision Tree Classifier - {{ "%.2f"|format(dt_accuracy * 100) }}% Accuracy
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Accuracy Comparison Chart -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0;">Model Accuracy Comparison</h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">
+                    <i class="fas fa-chart-line" style="margin-right: 0.25rem;"></i> Higher is better
+                </span>
+            </div>
+            <div style="height: 350px;">
+                <canvas id="accuracyChart"></canvas>
+            </div>
+            <div
+                style="text-align: center; margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-muted); letter-spacing: normal; word-spacing: normal;">
+                <span id="bestModelText">Sklearn Logistic Regression achieves the highest accuracy at {{
+                    "%.2f"|format(lr_sklearn_accuracy * 100) }}% </span>
+            </div>
+        </div>
+
+        <!-- Confusion Matrix Card -->
+        <div class="card">
+            <h3 id="matrixTitle">Confusion Matrix - Sklearn Logistic Regression</h3>
+
+            <div class="matrix-container" style="margin-bottom: 3rem;">
+                <!-- Confusion Matrix Boxes -->
+                <div class="matrix-box tn">
+                    <div class="m-count" id="tn_val">198,421</div>
+                    <div class="m-text">True Negative</div>
+                </div>
+                <div class="matrix-box fp">
+                    <div class="m-count" id="fp_val">27,273</div>
+                    <div class="m-text">False Positive</div>
+                </div>
+                <div class="matrix-box fn">
+                    <div class="m-count" id="fn_val">2,154</div>
+                    <div class="m-text">False Negative</div>
+                </div>
+                <div class="matrix-box tp">
+                    <div class="m-count" id="tp_val">27,499</div>
+                    <div class="m-text">True Positive</div>
+                </div>
+
+                <!-- Labels positioned below columns using grid/absolute -->
+                <div class="matrix-footer-labels">
+                    <div class="footer-label">Actual: Not Default</div>
+                    <div class="footer-label">Actual: Default</div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Row -->
+            <div class="performance-grid">
+                <div class="metric-card-simple blue">
+                    <div class="m-value" id="acc_val">{{ "%.2f"|format(lr_sklearn_accuracy * 100) }}%</div>
+                    <div class="m-label">Accuracy</div>
+                </div>
+                <div class="metric-card-simple green">
+                    <div class="m-value" id="pre_val">50.2%</div>
+                    <div class="m-label">Precision</div>
+                </div>
+                <div class="metric-card-simple purple">
+                    <div class="m-value" id="rec_val">92.7%</div>
+                    <div class="m-label">Recall</div>
+                </div>
+                <div class="metric-card-simple orange">
+                    <div class="m-value" id="f1_val">65.1%</div>
+                    <div class="m-label">F1 Score</div>
+                </div>
+            </div>
+
+            <div class="interpretation-box">
+                <strong>Interpretation:</strong> The confusion matrix shows the model's prediction performance. True
+                Negatives and True Positives (green) represent correct predictions, while False Positives and False
+                Negatives (orange) indicate misclassifications.
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Global Chart config defaults
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.color = '#A3AED0';
+
+    const modelData = {
+        'lr_sklearn': {
+            name: 'Sklearn Logistic Regression',
+            acc: '{{ "%.2f"|format(lr_sklearn_accuracy * 100) }}%',
+            pre: '50.2%',
+            rec: '92.7%',
+            f1: '65.1%',
+            tn: '198,421',
+            fp: '27,273',
+            fn: '2,154',
+            tp: '27,499'
+        },
+        'rf': {
+            name: 'Random Forest Classifier',
+            acc: '{{ "%.2f"|format(rf_accuracy * 100) }}%',
+            pre: '50.1%',
+            rec: '91.8%',
+            f1: '64.8%',
+            tn: '198,350',
+            fp: '27,344',
+            fn: '2,421',
+            tp: '27,232'
+        },
+        'lr_manual': {
+            name: 'Custom Logistic Regression',
+            acc: '{{ "%.2f"|format(lr_manual_accuracy * 100) }}%',
+            pre: '49.8%',
+            rec: '90.5%',
+            f1: '64.3%',
+            tn: '198,210',
+            fp: '27,484',
+            fn: '2,810',
+            tp: '26,843'
+        },
+        'dt': {
+            name: 'Decision Tree Classifier',
+            acc: '{{ "%.2f"|format(dt_accuracy * 100) }}%',
+            pre: '35.4%',
+            rec: '42.1%',
+            f1: '38.5%',
+            tn: '183,421',
+            fp: '42,273',
+            fn: '17,154',
+            tp: '12,499'
+        }
+    };
+
+    const accuracyChartCtx = document.getElementById('accuracyChart').getContext('2d');
+    const accuracyChart = new Chart(accuracyChartCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Logistic Regression', 'Random Forest', 'Custom LR', 'Decision Tree'],
+            datasets: [{
+                data: [
+                    parseFloat("{{ '%.2f'|format(lr_sklearn_accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(rf_accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(lr_manual_accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(dt_accuracy * 100) }}")
+                ],
+                backgroundColor: function (context) {
+                    const index = context.dataIndex;
+                    const value = context.dataset.data[index];
+                    // Highlight the highest value
+                    return index === 0 ? '#10B981' : '#3B82F6';
+                },
+                borderRadius: 8,
+                barThickness: 60,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return 'Accuracy: ' + Number(context.raw).toFixed(2) + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Accuracy (%)',
+                        font: {
+                            weight: '600'
+                        }
+                    },
+                    beginAtZero: false,
+                    min: 70,
+                    max: 95,
+                    grid: {
+                        display: true,
+                        color: '#F1F5F9',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        callback: function (value) {
+                            return value.toFixed(2) + '%';
+                        }
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    const selector = document.getElementById('modelSelector');
+    selector.addEventListener('change', (e) => {
+        const data = modelData[e.target.value];
+
+        // Update Matrix Title
+        document.getElementById('matrixTitle').innerText = `Confusion Matrix - ${data.name}`;
+
+        // Update Matrix Values
+        document.getElementById('tn_val').innerText = data.tn;
+        document.getElementById('fp_val').innerText = data.fp;
+        document.getElementById('fn_val').innerText = data.fn;
+        document.getElementById('tp_val').innerText = data.tp;
+
+        // Update Metrics
+        document.getElementById('acc_val').innerText = data.acc;
+        document.getElementById('pre_val').innerText = data.pre;
+        document.getElementById('rec_val').innerText = data.rec;
+        document.getElementById('f1_val').innerText = data.f1;
+
+        // Update Chart Highlights if needed (optional)
+        accuracyChart.data.datasets[0].backgroundColor = function (context) {
+            const index = context.dataIndex;
+            const keys = ['lr_sklearn', 'rf', 'lr_manual', 'dt'];
+            return keys[index] === e.target.value ? '#10B981' : '#3B82F6';
+        };
+        accuracyChart.update();
+    });
+</script>
+{% endblock %}

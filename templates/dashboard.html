@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+  <!-- Sidebar -->
+  {% include 'sidebar.html' %}
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+    </div>
+
+    <!-- Project Overview -->
+    <div class="card overview-card">
+      <h3>Project Overview</h3>
+      <div class="overview-section">
+        <span class="label">Title</span>
+        <p><strong>Loan Default Prediction System</strong></p>
+      </div>
+      <div class="overview-section">
+        <span class="label">Objective</span>
+        <p>
+          Develop and deploy machine learning models to detect loan default risk using classification algorithms.
+          The system analyzes applicant demographics, financial status, and credit history to identify potential default
+          cases with high accuracy.
+        </p>
+      </div>
+      <div class="overview-section">
+        <span class="label">Best Model</span>
+        <div class="best-model-pill">
+          <i class="fas fa-check-circle"></i> {{ best_model_name }} – {{ "%.2f"|format(best_model_accuracy * 100) }}%
+          Accuracy
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i class="fas fa-folder-tree"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ original_records }}</div>
+          <div class="stat-label">Original Records</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <i class="fas fa-wand-magic-sparkles"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ after_cleaning }}</div>
+          <div class="stat-label">After Cleaning</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">
+          <i class="fas fa-fingerprint"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ features_count }}</div>
+          <div class="stat-label">Features Used</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red">
+          <i class="fas fa-user-slash"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ removed_records }}</div>
+          <div class="stat-label">Removed Records</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Cleaning Process -->
+    <div class="card">
+      <h3>Data Cleaning & Preprocessing</h3>
+      <ul class="cleaning-list">
+        <li>
+          <span class="highlight">Original Dataset Shape:</span> ({{ original_records }}, {{ original_features }}) -
+          Large
+          scale financial dataset
+        </li>
+        <li>
+          <span class="highlight">Cleaned Dataset Shape:</span> ({{ after_cleaning }}, {{ features_count }}) - After
+          removing outliers and irrelevant features
+        </li>
+        <li>
+          <span class="highlight">Feature Engineering:</span> Dropped Unnecessary Column (LoanID)
+        </li>
+        <li>
+          <span class="highlight">Deduplication:</span> Removed duplicate rows to ensure data integrity
+        </li>
+        <li>
+          <span class="highlight">Categorical Encoding:</span> Applied One-Hot Encoding (pd.get_dummies) for categorical
+          variables
+        </li>
+        <li>
+          <span class="highlight">Validation Strategy:</span> 80% Training, 20% Testing with Stratified Split
+        </li>
+      </ul>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="card chart-card">
+        <h3>Model Accuracy Comparison</h3>
+        <div style="height: 300px;">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="card chart-card">
+        <h3>Target Variable Distribution</h3>
+        <div style="height: 300px;">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ML Algorithms Grid -->
+    <div class="card">
+      <h3>Machine Learning Algorithms</h3>
+      <div class="model-grid">
+        <!-- Logistic (Sklearn) -->
+        <div class="model-box best">
+          <div class="model-header">
+            <span class="model-name">Sklearn Logistic Regression</span>
+            <i class="fas fa-check-circle check-icon"></i>
+          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(lr_sklearn_accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+
+        <!-- Random Forest -->
+        <div class="model-box">
+          <div class="model-header">
+            <span class="model-name">Random Forest Classifier</span>
+            <i class="fas fa-check-circle check-icon"></i>
+          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(rf_accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+
+        <!-- Logistic (Manual) -->
+        <div class="model-box">
+          <div class="model-header">
+            <span class="model-name">Custom Logistic Regression</span>
+            <i class="fas fa-check-circle check-icon"></i>
+          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(lr_manual_accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+
+        <!-- Decision Tree -->
+        <div class="model-box">
+          <div class="model-header">
+            <span class="model-name">Decision Tree Classifier</span>
+            <i class="fas fa-check-circle check-icon"></i>
+          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(dt_accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Global Chart config defaults
+  Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+  Chart.defaults.color = '#A3AED0'; // Matches --text-muted
+
+  // Bar Chart
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: ['LR (Manual)', 'LR (Sklearn)', 'Decision Tree', 'Random Forest'],
+      datasets: [{
+        label: 'Accuracy (%)',
+        data: [
+          parseFloat("{{ '%.2f'|format(lr_manual_accuracy * 100) }}"),
+          parseFloat("{{ '%.2f'|format(lr_sklearn_accuracy * 100) }}"),
+          parseFloat("{{ '%.2f'|format(dt_accuracy * 100) }}"),
+          parseFloat("{{ '%.2f'|format(rf_accuracy * 100) }}")
+        ],
+        backgroundColor: '#4f46e5',
+        borderRadius: 8,
+        barThickness: 32
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label: function (context) {
+              return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          min: 75,
+          max: 95,
+          grid: { color: '#f1f5f9', drawBorder: false },
+          ticks: {
+            stepSize: 5,
+            callback: function (value) {
+              return value.toFixed(2) + '%';
+            }
+          }
+        },
+        x: {
+          grid: { display: false, drawBorder: false }
+        }
+      }
+    }
+  });
+
+  // Pie Chart
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: [
+        'Non-Default (' + "{{ not_default_percent }}" + '%)',
+        'Default (' + "{{ default_percent }}" + '%)'
+      ],
+      datasets: [{
+        data: [
+          parseFloat("{{ not_default_percent }}"),
+          parseFloat("{{ default_percent }}")
+        ],
+        backgroundColor: ['#10b981', '#ef4444'],
+        borderWidth: 0,
+        hoverOffset: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 25,
+            font: { size: 12, weight: '500' }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          padding: 12,
+          cornerRadius: 8
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

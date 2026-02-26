@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='prediction_history.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+    <!-- Sidebar -->
+    {% include 'sidebar.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Prediction History</h1>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
+                    View and analyze all specific details of your past loan assessments.
+                </p>
+            </div>
+            <div class="user-badge"
+                style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.5rem 1.25rem; border-radius: 2rem; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(16, 185, 129, 0.2);">
+                <i class="fas fa-history" style="margin-right: 0.5rem;"></i> {{ predictions|length }} Records
+            </div>
+        </div>
+
+
+
+        <div class="card">
+            <h3>Assessment Logs</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                Click any row to expand full applicant details and risk factor features.
+            </p>
+            {% if predictions %}
+            <div
+                style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: 12px; background: var(--card-bg);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead style="background-color: var(--bg-color); color: var(--text-muted);">
+                        <tr>
+                            <th style="padding: 16px 20px;">Date Analyzed</th>
+                            <th style="padding: 16px 20px;">Requested Amount (₹)</th>
+                            <th style="padding: 16px 20px;">Income (₹)</th>
+                            <th style="padding: 16px 20px;">Algorithm</th>
+                            <th style="padding: 16px 20px;">Prediction Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in predictions %}
+                        <tr class="history-row" style="cursor: pointer; transition: background-color 0.2s;"
+                            onclick="toggleDetails('details-{{ p.id }}')">
+                            <td style="padding: 16px 20px;">{{ p.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td style="padding: 16px 20px; font-weight: 600;">₹{{ "{:,.2f}".format(p.loan_amount) }}
+                            </td>
+                            <td style="padding: 16px 20px;">₹{{ "{:,.2f}".format(p.income) }}</td>
+                            <td style="padding: 16px 20px;">{{ p.model_used }}</td>
+                            {% if 'Default' in p.prediction %}
+                            <td style="padding: 16px 20px; font-weight: 700; color: #ef4444;">{{ p.prediction }}
+                            </td>
+                            {% else %}
+                            <td style="padding: 16px 20px; font-weight: 700; color: #10b981;">{{ p.prediction }}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr id="details-{{ p.id }}" class="details-row" style="display: none;">
+                            <td colspan="5" style="padding: 20px;">
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                    <div><strong>Loan Amount:</strong> ₹{{ "{:,.2f}".format(p.loan_amount) }}</div>
+                                    <div><strong>Income:</strong> ₹{{ "{:,.2f}".format(p.income) }}</div>
+                                    <div><strong>Model Used:</strong> {{ p.model_used }}</div>
+                                    <div><strong>Credit Score:</strong> {{ p.credit_score if p.credit_score else
+                                        'N/A' }}</div>
+                                    <div><strong>Interest Rate:</strong> {{ p.interest_rate if p.interest_rate
+                                        else 'N/A' }}%</div>
+                                    <div><strong>Loan Term:</strong> {{ p.loan_term if p.loan_term else 'N/A' }}
+                                        Months</div>
+                                    <div><strong>Age:</strong> {{ p.age if p.age else 'N/A' }} Years</div>
+                                    <div><strong>DTI Ratio:</strong> {{ p.dti_ratio if p.dti_ratio else 'N/A' }}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <script>
+                function toggleDetails(id) {
+                    var element = document.getElementById(id);
+                    if (element.style.display === "none") {
+                        element.style.display = "table-row";
+                    } else {
+                        element.style.display = "none";
+                    }
+                }
+            </script>
+            {% else %}
+            <div
+                style="background: var(--card-bg); padding: 60px 20px; border-radius: 20px; box-shadow: var(--shadow-sm); text-align: center; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 380px;">
+                <div
+                    style="width: 80px; height: 80px; background: rgba(99, 102, 241, 0.1); color: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 24px;">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">No
+                    Predictions Yet</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; max-width: 320px;">You
+                    haven't run any loan default predictions yet. Start utilizing the ML engine to generate risk
+                    profiles.</p>
+                <a href="{{ url_for('main.loan') }}" class="btn"
+                    style="background: var(--primary-color, #6366f1); color: white; text-decoration: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-play"></i> Run First Prediction
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

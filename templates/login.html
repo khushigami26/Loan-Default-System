@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoanDefault - Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+
+<body>
+  <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+    <i class="fas fa-moon"></i>
+  </button>
+
+
+  <div class="auth-container">
+    <div class="auth-header">
+      <div class="logo-badge"><i class="fas fa-layer-group"></i></div>
+      <h2>Welcome back</h2>
+      <p>Sign in to your Loan Default dashboard</p>
+    </div>
+
+    <form method="POST">
+      <div class="input-group">
+        <label> Username</label>
+        <input type="text" name="username" placeholder="Enter Username" required />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" name="password" id="password-field" placeholder="Enter Password" required />
+        <i class="fas fa-eye password-toggle" id="toggle-password"></i>
+      </div>
+
+      <button type="submit" class="btn-gradient">Login</button>
+    </form>
+
+    <div class="auth-footer" style="padding-bottom: 8px;">
+      Don't have an account? <a href="/register">register</a>
+
+      <div style="margin-top: 24px;">
+        <a href="/" class="btn-gradient"
+          style="display: inline-block; padding: 10px 24px; text-decoration: none; width: auto; font-size: 14px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: none; color: white;">
+          <i class="fas fa-arrow-left" style="margin-right: 6px;"></i> Back to Home Page
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+      const icon = themeToggle.querySelector('i');
+
+      // Check for saved theme preference in localStorage
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        body.classList.add('light-mode');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+
+      themeToggle.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) {
+          localStorage.setItem('theme', 'light');
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        } else {
+          localStorage.setItem('theme', 'dark');
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      });
+
+      const togglePassword = document.getElementById('toggle-password');
+      const passwordField = document.getElementById('password-field');
+
+      togglePassword.addEventListener('click', function () {
+        // Toggle the type attribute
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+
+        // Toggle the eye / eye slash icon
+        this.classList.toggle('fa-eye-slash');
+        this.classList.toggle('fa-eye');
+      });
+    });
+  </script>
+
+  {% include "toast.html" %}</body>
+
+</html>

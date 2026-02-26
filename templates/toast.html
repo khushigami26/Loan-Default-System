@@ -1,0 +1,117 @@
+<style>
+    .toast-container {
+        position: fixed;
+        bottom: 32px;
+        right: 32px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .toast-message {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        min-width: 320px;
+        max-width: 450px;
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast-message.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    /* Category Specific Styles */
+    .toast-message.success {
+        border-left: 5px solid #10B981;
+    }
+
+    .toast-message.error {
+        border-left: 5px solid #EF4444;
+    }
+
+    .toast-message.info {
+        border-left: 5px solid #3B82F6;
+    }
+
+    .toast-message i {
+        font-size: 1.25rem;
+    }
+
+    .toast-message.success i {
+        color: #10B981;
+    }
+
+    .toast-message.error i {
+        color: #EF4444;
+    }
+
+    .toast-message.info i {
+        color: #3B82F6;
+    }
+
+    .toast-close {
+        margin-left: auto;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+    }
+
+    .toast-close:hover {
+        opacity: 1;
+    }
+</style>
+
+<div class="toast-container" id="toast-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="toast-message {{ category if category else 'info' }}">
+        {% if category == 'success' %}
+        <i class="fas fa-check-circle"></i>
+        {% elif category == 'error' %}
+        <i class="fas fa-exclamation-circle"></i>
+        {% else %}
+        <i class="fas fa-info-circle"></i>
+        {% endif %}
+        <span>{{ message }}</span>
+        <i class="fas fa-times toast-close" onclick="this.parentElement.remove()"></i>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toasts = document.querySelectorAll('.toast-message');
+        toasts.forEach((toast, index) => {
+            // Slide in stagger
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 150 * index);
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px) scale(0.95)';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000 + (150 * index));
+        });
+    });
+</script>

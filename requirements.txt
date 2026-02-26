@@ -1,0 +1,9 @@
+flask
+mongoengine
+flask_login>=0.6
+numpy
+scikit-learn
+pandas
+gunicorn
+certifi
+python-dotenv

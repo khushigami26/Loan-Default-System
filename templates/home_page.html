@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Default- AI For Loan Default Prediction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='home_page.css') }}">
+</head>
+
+<body>
+  <div class="bg-animation"></div>
+
+  <nav>
+    <div class="logo">
+      <i class="fas fa-layer-group"></i> Loan Default System
+    </div>
+    <div class="nav-links">
+      <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Theme">
+        <i class="fas fa-moon"></i>
+      </button>
+      <a href="{{ url_for('auth.register') }}" class="nav-btn login-btn"><i class="fas fa-user-plus"
+          style="margin-right: 6px;"></i> Register</a>
+      <a href="{{ url_for('auth.login') }}" class="nav-btn register-btn"><i class="fas fa-sign-in-alt"
+          style="margin-right: 6px;"></i> Login</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="badge">
+        <i class="fas fa-bolt"></i> AI Powered · Secure
+      </div>
+      <h1>Predict loan defaults with <span>insane accuracy.</span></h1>
+      <p>Leverage our proprietary machine learning ensemble models to assess financial risk, make faster lending
+        decisions, and minimize default rates.</p>
+      <div class="hero-buttons">
+        <a href="{{ url_for('auth.register') }}" class="nav-btn register-btn btn-large"><i class="fas fa-rocket"
+            style="margin-right: 8px;"></i> Get Started</a>
+        <a href="{{ url_for('auth.login') }}" class="nav-btn login-btn btn-large"><i class="fas fa-sign-in-alt"
+            style="margin-right: 8px;"></i> Login</a>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-number">88.5%</div>
+          <div class="stat-label">Prediction Accuracy</div>
+        </div>
+        <div>
+          <div class="stat-number">255k+</div>
+          <div class="stat-label">Loans Analyzed</div>
+        </div>
+        <div>
+          <div class="stat-number">
+            < 7s</div>
+              <div class="stat-label">Model Latency</div>
+          </div>
+        </div>
+      </div>
+
+      <section class="features">
+        <div class="feature-card">
+          <div class="icon-wrapper bg-blue">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>Ensemble Modeling</h3>
+          <p>Combining the power of Logistic Regression, Random Forest, and Decision Trees to provide a robust,
+            cross-validated risk score.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-wrapper bg-emerald">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Bank-Grade Security</h3>
+          <p>Your financial datasets are encrypted at rest and in transit. No sensitive PII is permanently stored
+            without consent.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-wrapper bg-purple">
+            <i class="fas fa-chart-pie"></i>
+          </div>
+          <h3>Actionable Insights</h3>
+          <p>Get clear, interpretable results explaining exactly which factors contributed most to the approval or
+            rejection decision.</p>
+        </div>
+      </section>
+  </main>
+
+  <footer
+    style="text-align: center; padding: 40px; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px;">
+    <p>© 2026 Loan Default System. All rights reserved. Built with specialized ML architecture.</p>
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+      const icon = themeToggle.querySelector('i');
+
+      // Check for saved theme preference in localStorage
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        body.classList.add('light-mode');
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      }
+
+      themeToggle.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) {
+          localStorage.setItem('theme', 'light');
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        } else {
+          localStorage.setItem('theme', 'dark');
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

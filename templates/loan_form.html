@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='loan_form.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-container">
+  {% include 'sidebar.html' %}
+
+  <!-- Centered Processing Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loader-content">
+      <div class="spinner-circle"></div>
+      <p class="loader-text">Analyzing Risk Profile...</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Predicting Loan Default Probability</p>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Loan Risk Assessment</h1>
+        <p class="page-subtitle">Fill out the clinical data to predict loan default probability.</p>
+      </div>
+      <div class="header-badge v2-badge">
+        <span class="live-dot"></span> AI Powered · Secure
+      </div>
+    </header>
+
+    <form method="POST">
+
+      <!-- Step 1: Model & Strategy Selection -->
+      <div class="card model-selector-card">
+        <div class="section-header" style="border: none; margin-bottom: 1rem;">
+          <i class="fas fa-microchip"></i>
+          <h3>Prediction Engine</h3>
+        </div>
+        <div class="form-group" style="max-width: 500px;">
+          <label for="model_type">Select Algorithm</label>
+          <select id="model_type" name="model_type" class="form-control">
+            <option value="lr_sklearn" selected>Sklearn Logistic Regression - Recommended (88.52%)</option>
+            <option value="rf">Random Forest Classifier (88.49%)</option>
+            <option value="lr_manual">Custom Logistic Regression (88.40%)</option>
+            <option value="dt">Decision Tree Classifier (80.28%)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Step 2: Applicant Financial Profile -->
+      <div class="card">
+        <div class="section-header">
+          <i class="fas fa-user-tie"></i>
+          <h3>Applicant Financial Profile</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="Age">Age (Years)</label>
+            <input id="Age" type="number" name="Age" min="18" max="100" placeholder="e.g. 35" required
+              class="form-control" value="{{ request.form.get('Age','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="Income">Annual Income (₹)</label>
+            <input id="Income" type="number" name="Income" min="0" step="0.01" placeholder="e.g. 800000" required
+              class="form-control" value="{{ request.form.get('Income','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="CreditScore">Credit Score</label>
+            <input id="CreditScore" type="number" name="CreditScore" min="300" max="850" placeholder="300 - 850"
+              required class="form-control" value="{{ request.form.get('CreditScore','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="Education">Education Level</label>
+            <select id="Education" name="Education" required class="form-control">
+              <option value="" disabled {% if not request.form.get('Education') %}selected{% endif %}>Select Education
+              </option>
+              <option value="High School" {% if request.form.get('Education')=='High School' %}selected{% endif %}>High
+                School</option>
+              <option value="Bachelor's" {% if request.form.get('Education')=="Bachelor's" %}selected{% endif %}>
+                Bachelor's</option>
+              <option value="Master's" {% if request.form.get('Education')=="Master's" %}selected{% endif %}>Master's
+              </option>
+              <option value="PhD" {% if request.form.get('Education')=='PhD' %}selected{% endif %}>PhD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="EmploymentType">Employment Type</label>
+            <select id="EmploymentType" name="EmploymentType" required class="form-control">
+              <option value="" disabled {% if not request.form.get('EmploymentType') %}selected{% endif %}>Select Type
+              </option>
+              <option value="Full-time" {% if request.form.get('EmploymentType')=='Full-time' %}selected{% endif %}>
+                Full-time</option>
+              <option value="Part-time" {% if request.form.get('EmploymentType')=='Part-time' %}selected{% endif %}>
+                Part-time</option>
+              <option value="Self-employed" {% if request.form.get('EmploymentType')=='Self-employed' %}selected{% endif
+                %}>Self-employed</option>
+              <option value="Unemployed" {% if request.form.get('EmploymentType')=='Unemployed' %}selected{% endif %}>
+                Unemployed</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="MaritalStatus">Marital Status</label>
+            <select id="MaritalStatus" name="MaritalStatus" required class="form-control">
+              <option value="" disabled {% if not request.form.get('MaritalStatus') %}selected{% endif %}>Select Status
+              </option>
+              <option value="Single" {% if request.form.get('MaritalStatus')=='Single' %}selected{% endif %}>Single
+              </option>
+              <option value="Married" {% if request.form.get('MaritalStatus')=='Married' %}selected{% endif %}>Married
+              </option>
+              <option value="Divorced" {% if request.form.get('MaritalStatus')=='Divorced' %}selected{% endif %}>
+                Divorced</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="HasMortgage" {% if request.form.get('HasMortgage') %}checked{% endif %} />
+            <span class="checkbox-label-text">Existing Mortgage</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="HasDependents" {% if request.form.get('HasDependents') %}checked{% endif %} />
+            <span class="checkbox-label-text">Financial Dependents</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="HasCoSigner" {% if request.form.get('HasCoSigner') %}checked{% endif %} />
+            <span class="checkbox-label-text">Has Co-Signer</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Step 3: Loan Parameters -->
+      <div class="card">
+        <div class="section-header">
+          <i class="fas fa-hand-holding-usd"></i>
+          <h3>Loan Application Details</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="LoanAmount">Requested Amount (₹)</label>
+            <input id="LoanAmount" type="number" name="LoanAmount" min="0" step="0.01" placeholder="e.g. 500000"
+              required class="form-control" value="{{ request.form.get('LoanAmount','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="InterestRate">Interest Rate (%)</label>
+            <input id="InterestRate" type="number" name="InterestRate" min="0" step="0.01" placeholder="e.g. 11.5"
+              required class="form-control" value="{{ request.form.get('InterestRate','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="LoanTerm">Term (Months)</label>
+            <input id="LoanTerm" type="number" name="LoanTerm" min="1" placeholder="e.g. 36" required
+              class="form-control" value="{{ request.form.get('LoanTerm','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="DTIRatio">DTI Ratio (%)</label>
+            <input id="DTIRatio" type="number" name="DTIRatio" min="0" step="0.01" placeholder="e.g. 0.35" required
+              class="form-control" value="{{ request.form.get('DTIRatio','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="MonthsEmployed">Months Employed</label>
+            <input id="MonthsEmployed" type="number" name="MonthsEmployed" min="0" placeholder="e.g. 24" required
+              class="form-control" value="{{ request.form.get('MonthsEmployed','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="NumCreditLines">Active Credit Lines</label>
+            <input id="NumCreditLines" type="number" name="NumCreditLines" min="0" placeholder="e.g. 3" required
+              class="form-control" value="{{ request.form.get('NumCreditLines','') }}" />
+          </div>
+          <div class="form-group">
+            <label for="LoanPurpose">Loan Purpose</label>
+            <select id="LoanPurpose" name="LoanPurpose" required class="form-control">
+              <option value="" disabled {% if not request.form.get('LoanPurpose') %}selected{% endif %}>Select Purpose
+              </option>
+              <option value="Home" {% if request.form.get('LoanPurpose')=='Home' %}selected{% endif %}>Home Purchase
+              </option>
+              <option value="Business" {% if request.form.get('LoanPurpose')=='Business' %}selected{% endif %}>Business
+              </option>
+              <option value="Education" {% if request.form.get('LoanPurpose')=='Education' %}selected{% endif %}>
+                Education</option>
+              <option value="Auto" {% if request.form.get('LoanPurpose')=='Auto' %}selected{% endif %}>Auto</option>
+              <option value="Other" {% if request.form.get('LoanPurpose')=='Other' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="reset" class="btn-clear">
+            Clear Form
+          </button>
+          <button type="submit" class="btn-submit" id="analyze-btn">
+            <span class="btn-text"><i class="fas fa-magic"></i> Analyze Default Risk</span>
+            <span class="btn-loader" style="display: none;">
+              <i class="fas fa-spinner fa-spin"></i> Processing Request...
+            </span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const btn = document.getElementById('analyze-btn');
+    const overlay = document.getElementById('loading-overlay');
+    const text = btn.querySelector('.btn-text');
+    const loader = btn.querySelector('.btn-loader');
+
+    form.addEventListener('submit', function () {
+      // Show centered overlay
+      overlay.classList.add('active');
+
+      // Update button state too
+      setTimeout(() => {
+        btn.classList.add('loading');
+        btn.style.opacity = '0.8';
+        btn.style.pointerEvents = 'none';
+      }, 50);
+    });
+  });
+</script>
+{% endblock %}

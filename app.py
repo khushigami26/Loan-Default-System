@@ -1,15 +1,16 @@
 import os
 import pickle
+import certifi
 from flask import Flask
 from flask_login import LoginManager
 from dotenv import load_dotenv
-
-load_dotenv()
 from mongoengine import connect, disconnect
-import certifi
 from models import User
 from auth import auth as auth_blueprint
 from main import main as main_blueprint
+
+load_dotenv()
+
 
 def create_app():
     app = Flask(__name__)
@@ -23,13 +24,13 @@ def create_app():
     atlas_host = os.environ.get("MONGODB_URL")
     if not atlas_host:
         print("MONGODB_URL environment variable is missing!")
-    
+
     try:
         disconnect()
         connect(
-            host=atlas_host, 
+            host=atlas_host,
             tlsCAFile=certifi.where(),
-            serverSelectionTimeoutMS=5000  
+            serverSelectionTimeoutMS=5000
         )
     except Exception as e:
         print(f"MongoDB connection failed: {e}")
@@ -42,7 +43,7 @@ def create_app():
     def load_user(user_id):
         try:
             return User.objects(pk=user_id).first()
-        except:
+        except Exception:
             return None
 
     # Load ML Model
@@ -64,7 +65,9 @@ def create_app():
 
     return app
 
+
 app = create_app()
+
 
 @app.route("/health-full")
 def health_full():
@@ -73,12 +76,13 @@ def health_full():
         User.objects.count()
     except Exception as e:
         db_status = f"error: {str(e)}"
-    
+
     return {
         "status": "online",
         "mongodb": db_status,
         "model_loaded": app.ml_model is not None
     }, 200
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

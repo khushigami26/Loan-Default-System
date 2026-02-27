@@ -27,12 +27,13 @@
     <form method="POST">
       <div class="input-group">
         <label> Username</label>
-        <input type="text" name="username" placeholder="Enter Username" required />
+        <input type="text" name="username" placeholder="Enter Username" value="{{ username }}" required />
       </div>
 
       <div class="input-group">
         <label>Password</label>
-        <input type="password" name="password" id="password-field" placeholder="Enter Password" required />
+        <input type="password" name="password" id="password-field" placeholder="Enter Password" value="{{ password }}"
+          required />
         <i class="fas fa-eye password-toggle" id="toggle-password"></i>
       </div>
 

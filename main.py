@@ -7,34 +7,36 @@ import warnings
 
 main = Blueprint('main', __name__)
 
+
 @main.route("/")
 def home():
     return render_template("home_page.html")
+
 
 @main.route("/dashboard")
 @login_required
 def dashboard():
     return redirect(url_for("main.loan_default_dashboard"))
 
+
 @main.route("/loan-default")
 @login_required
 def loan_default_dashboard():
-    # Dataset overview 
+    # Dataset overview
     original_records = 255347
     original_columns = 18
     after_cleaning = 225694
     removed_records = 29653
     features_used = 17
-    
-    # Model Accuracies 
+
+    # Model Accuracies
     lr_manual_acc = 0.8840
-    lr_sklearn_acc = 0.88515 # Best model
+    lr_sklearn_acc = 0.88515  # Best model
     dt_acc = 0.80279
     rf_acc = 0.88488
-   
+
     not_default_pct = round(225694 / 255347 * 100, 1)
     default_pct = round(29653 / 255347 * 100, 1)
-    
     return render_template(
         "dashboard.html",
         original_records=f"{original_records:,}",
@@ -52,6 +54,7 @@ def loan_default_dashboard():
         default_percent=default_pct,
     )
 
+
 @main.route("/loan-default/model-performance")
 @login_required
 def loan_default_model_performance():
@@ -59,7 +62,7 @@ def loan_default_model_performance():
     rf_acc = 0.88488
     lr_manual_acc = 0.8840
     dt_acc = 0.80279
-    
+
     return render_template(
         "model_performance.html",
         lr_sklearn_accuracy=lr_sklearn_acc,
@@ -68,10 +71,12 @@ def loan_default_model_performance():
         dt_accuracy=dt_acc
     )
 
+
 @main.route("/loan-default/feature-insights")
 @login_required
 def loan_default_feature_insights():
     return render_template("feature_insights.html")
+
 
 @main.route("/api/dashboard-data")
 @login_required
@@ -79,7 +84,7 @@ def dashboard_data():
     total_live_apps = PredictionHistory.objects.count()
     rejected_count = PredictionHistory.objects(prediction__icontains='Default').count()
     approved_count = total_live_apps - rejected_count
-    
+
     avg_income_val = PredictionHistory.objects.average('income') or 0
     avg_loan_val = PredictionHistory.objects.average('loan_amount') or 0
 
@@ -136,6 +141,7 @@ def dashboard_data():
         }
     )
 
+
 @main.route("/loan", methods=["GET", "POST"])
 @login_required
 def loan():
@@ -152,7 +158,7 @@ def loan():
 
             features_dict = {name: 0 for name in feature_names}
             numeric_fields = ["Age", "Income", "LoanAmount", "CreditScore", "MonthsEmployed", "NumCreditLines", "InterestRate", "LoanTerm", "DTIRatio"]
-            
+
             for f in numeric_fields:
                 val = request.form.get(f)
                 if val is None or val == "":
@@ -216,10 +222,12 @@ def loan():
 
     return render_template("loan_form.html")
 
+
 @main.route("/profile")
 @login_required
 def profile():
     return render_template("profile.html")
+
 
 @main.route("/prediction-history")
 @login_required

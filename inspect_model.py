@@ -5,7 +5,7 @@ model_path = os.path.join("model", "loan_default_model.pkl")
 if os.path.exists(model_path):
     with open(model_path, "rb") as f:
         model = pickle.load(f)
-    
+
     print("Model Type:", type(model))
     if hasattr(model, "coef_"):
         print("Coefficients:", model.coef_)

@@ -48,14 +48,12 @@
         });
       }
 
-      // Close sidebar when clicking outside on mobile
       document.addEventListener("click", (e) => {
         if (sidebar && sidebar.classList.contains("active") && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
           sidebar.classList.remove("active");
         }
       });
 
-      // Check current theme
       if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark-theme");
         if (themeIcon) {

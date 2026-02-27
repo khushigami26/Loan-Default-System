@@ -62,7 +62,8 @@
                         </tr>
                         <tr id="details-{{ p.id }}" class="details-row" style="display: none;">
                             <td colspan="5" style="padding: 20px;">
-                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div class="details-grid"
+                                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
                                     <div><strong>Loan Amount:</strong> ₹{{ "{:,.2f}".format(p.loan_amount) }}</div>
                                     <div><strong>Income:</strong> ₹{{ "{:,.2f}".format(p.income) }}</div>
                                     <div><strong>Model Used:</strong> {{ p.model_used }}</div>

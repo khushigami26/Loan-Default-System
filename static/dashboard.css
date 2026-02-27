@@ -3,15 +3,12 @@
 :root {
   --bg-color: #F8FAFC;
   --sidebar-bg: rgba(255, 255, 255, 0.85);
-  /* Glassmorphism start */
   --card-bg: rgba(255, 255, 255, 0.9);
   --primary-color: #4F46E5;
-  /* Deeper indigo/blue */
   --primary-hover: #4338CA;
   --text-main: #0F172A;
   --text-muted: #64748B;
   --border-color: rgba(203, 213, 225, 0.5);
-  /* Lighter translucent border */
   --success-bg: #ECFDF5;
   --success-text: #059669;
   --danger-bg: #FEF2F2;
@@ -138,7 +135,6 @@ body {
   margin-right: 0.75rem;
   font-size: 1.1rem;
   color: var(--text-muted);
-  /* Faded */
 }
 
 .sidebar-footer {
@@ -181,7 +177,6 @@ body {
 
 .page-title {
   font-size: 1.5rem;
-  /* text-2xl/text-3xl */
   font-weight: 700;
   color: var(--text-main);
   letter-spacing: -0.025em;
@@ -207,7 +202,6 @@ body {
 
 .card h3 {
   font-size: 1.125rem;
-  /* text-lg */
   font-weight: 600;
   color: var(--text-main);
   margin-bottom: 1rem;
@@ -224,11 +218,8 @@ body {
 
 .label {
   font-size: 0.875rem;
-  /* text-sm */
   font-weight: 500;
-  /* font-medium */
   color: var(--text-muted);
-  /* text-gray-600 */
   text-transform: none;
   letter-spacing: normal;
   display: block;
@@ -239,7 +230,6 @@ body {
   font-size: 0.95rem;
   color: var(--text-main);
   font-weight: 500;
-  /* Slightly bolder for readability */
   line-height: 1.6;
 }
 
@@ -254,6 +244,14 @@ body {
   font-size: 0.875rem;
   margin-top: 0.5rem;
   border: 1px solid rgba(5, 205, 153, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.best-model-pill:hover {
+  transform: scale(1.05) translateX(5px);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+  filter: brightness(1.02);
 }
 
 .best-model-pill i {
@@ -351,9 +349,7 @@ body {
 .stat-label {
   font-size: 0.75rem;
   color: var(--text-muted);
-  /* Faded color */
   font-weight: 500;
-  /* Faded weight */
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -402,12 +398,10 @@ body {
 
 .cleaning-list span.highlight {
   color: var(--text-main);
-  /* Bold */
   font-weight: 700;
-  /* Even bolder */
 }
 
-/* Charts Section */
+/* Charts  */
 .charts-row {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -469,9 +463,7 @@ body {
 .model-box .accuracy-label {
   font-size: 0.75rem;
   color: var(--text-muted);
-  /* Faded color */
   font-weight: 500;
-  /* Faded weight */
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -528,7 +520,7 @@ body {
   }
 }
 
-/* Model Performance Page Styles */
+/* Model Performance Page  */
 .model-select-container {
   margin-bottom: 2rem;
 }
@@ -736,7 +728,6 @@ body {
 .heatmap-label-top {
   position: absolute;
   top: -26px;
-  /* Increased offset to prevent overlap */
   left: 0;
   display: flex;
   width: 100%;
@@ -948,7 +939,6 @@ body {
   color: #7C3AED;
 }
 
-/* Dark Mode Overrides for Feature Cards */
 .dark-theme .f-metric-card.blue {
   background-color: rgba(37, 99, 235, 0.15);
   border-color: rgba(37, 99, 235, 0.3);
@@ -1000,7 +990,7 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-/* Feature Page Specifics */
+/* Feature Page  */
 .card-header-feature {
   display: flex;
   align-items: flex-start;
@@ -1071,7 +1061,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Responsive Adjustments */
+/* Responsive  */
 @media (max-width: 1024px) {
   .sidebar {
     width: 240px;
@@ -1088,23 +1078,38 @@ body {
   }
 
   .sidebar {
-    width: 100%;
-    height: auto;
+    width: 280px;
+    height: 100vh;
     position: fixed;
     top: 0;
-    left: -100%;
-    transition: all 0.3s ease;
+    left: -280px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.2);
   }
 
   .sidebar.active {
     left: 0;
   }
 
+  /* Overlay when sidebar  active */
+  .sidebar.active::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 280px;
+    width: calc(100vw - 280px);
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+  }
+
   .main-content {
     margin-left: 0 !important;
     padding: 1.5rem 1rem !important;
     width: 100%;
+    margin-top: 0;
   }
 
   .charts-row {
@@ -1125,7 +1130,7 @@ body {
     display: flex !important;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     background: var(--sidebar-bg);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
@@ -1135,17 +1140,31 @@ body {
   }
 
   .mobile-toggle {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
     color: var(--text-main);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(100, 116, 139, 0.1);
+    border-radius: 10px;
   }
 
   .sidebar-header .sidebar-close {
-    display: block !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-radius: 8px;
   }
 
   .selected-features-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
@@ -1155,7 +1174,7 @@ body {
   }
 
   .selected-features-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .page-title {
@@ -1167,17 +1186,10 @@ body {
   }
 }
 
-/* Hidden by default, shown via media query */
 .mobile-header {
   display: none;
 }
 
-.sidebar-header .fa-bars {
-  cursor: pointer;
-}
-
-/* Feature grid items scaling */
-.feature-pill {
-  justify-content: center;
-  text-align: center;
+.sidebar-header .sidebar-close {
+  display: none;
 }

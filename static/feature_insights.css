@@ -1,0 +1,145 @@
+.dark-theme {
+    --bg-color: #1a2230 !important;
+}
+
+.f-metric-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+    border-width: 1.5px !important;
+}
+
+.f-metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+    filter: brightness(1) !important;
+}
+
+.f-metric-card.blue:hover {
+    background-color: #eff6ff !important;
+}
+
+.f-metric-card.green:hover {
+    background-color: #f0fdf4 !important;
+}
+
+.f-metric-card.purple:hover {
+    background-color: #faf5ff !important;
+}
+
+/* Dark mode hover color  */
+.dark-theme .f-metric-card:hover {
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    filter: brightness(1) !important;
+}
+
+.f-metric-card.blue {
+    background-color: #eff6ff !important;
+    border-color: #dbeafe !important;
+}
+
+.f-metric-card.green {
+    background-color: #f0fdf4 !important;
+    border-color: #dcfce7 !important;
+}
+
+.f-metric-card.purple {
+    background-color: #faf5ff !important;
+    border-color: #f3e8ff !important;
+}
+
+.dark-theme .f-metric-card.blue {
+    background-color: rgba(30, 48, 80, 0.6) !important;
+    border-color: #3b82f6 !important;
+}
+
+.dark-theme .f-metric-card.green {
+    background-color: rgba(30, 45, 45, 0.6) !important;
+    border-color: #10b981 !important;
+}
+
+.dark-theme .f-metric-card.purple {
+    background-color: rgba(40, 35, 60, 0.6) !important;
+    border-color: #8b5cf6 !important;
+}
+
+/* Selected Features Grid */
+.selected-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 992px) {
+    .selected-features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .selected-features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .performance-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Feature Pill  */
+.feature-pill {
+    background-color: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    color: #166534 !important;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 10px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+}
+
+/* Feature Pill - Dark Mode */
+.dark-theme .feature-pill {
+    background-color: #103d36 !important;
+    border-color: #1a4d45 !important;
+    color: #34d399 !important;
+}
+
+/* Hover Effects  */
+.feature-pill:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 15px rgba(16, 185, 129, 0.15);
+    background-color: #f0fdf4 !important;
+    border-color: #86efac !important;
+    filter: brightness(1) !important;
+}
+
+.dark-theme .feature-pill:hover {
+    background-color: #103d36 !important;
+    border-color: #10b981 !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    filter: brightness(1) !important;
+}
+
+/*  Header styling */
+.card-header-simple {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem !important;
+}
+
+/* Caption styling */
+.text-caption {
+    background: rgba(100, 116, 139, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #10b981;
+    margin-top: 2rem !important;
+    color: var(--text-muted);
+}
+
+.dark-theme .text-caption {
+    background: rgba(30, 41, 59, 0.4);
+    color: #94a3b8;
+}

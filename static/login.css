@@ -93,6 +93,27 @@ body {
 .input-group input:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+body.light-mode .input-group input:focus {
+  background: #ffffff !important;
+  border-color: var(--primary);
+}
+
+.input-group input:-webkit-autofill,
+.input-group input:-webkit-autofill:hover,
+.input-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+body.light-mode .input-group input:-webkit-autofill,
+body.light-mode .input-group input:-webkit-autofill:hover,
+body.light-mode .input-group input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
 }
 
 .password-toggle {
@@ -198,7 +219,7 @@ body.light-mode .password-toggle:hover {
   transform: translateY(-2px);
 }
 
-/* Light Mode Variables */
+/* Light Mode  */
 body.light-mode {
   --dark: #f8fafc;
   --light: #0f172a;

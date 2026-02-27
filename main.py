@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_required, current_user
 from models import PredictionHistory
 from datetime import datetime, timedelta
-import numpy as np
 import pandas as pd
 import warnings
 
@@ -20,14 +19,14 @@ def dashboard():
 @main.route("/loan-default")
 @login_required
 def loan_default_dashboard():
-    # Dataset overview (Provided by User)
+    # Dataset overview 
     original_records = 255347
     original_columns = 18
     after_cleaning = 225694
     removed_records = 29653
     features_used = 17
     
-    # Model Accuracies (Provided by User)
+    # Model Accuracies 
     lr_manual_acc = 0.8840
     lr_sklearn_acc = 0.88515 # Best model
     dt_acc = 0.80279
@@ -189,7 +188,6 @@ def loan():
             model_name = model_mapping.get(model_type, "Selected Model")
 
             ordered = [features_dict[name] for name in feature_names]
-            # Use DataFrame with named columns to avoid sklearn feature name warning
             features_df = pd.DataFrame([ordered], columns=list(feature_names))
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")

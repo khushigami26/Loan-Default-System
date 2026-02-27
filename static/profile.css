@@ -78,3 +78,13 @@
     gap: 0.75rem;
     border-radius: 8px;
 }
+
+.dark-theme .flash-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: #10b981;
+}
+
+.dark-theme .status-active {
+    color: #34d399;
+}

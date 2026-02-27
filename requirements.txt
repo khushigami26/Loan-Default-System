@@ -7,3 +7,4 @@ scikit-learn==1.5.1
 pandas==2.2.2
 gunicorn==23.0.0
 certifi
+python-dotenv

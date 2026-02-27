@@ -1,4 +1,204 @@
-/* Local overrides to ensure full height and layout */
-    body {
-        background-color: var(--bg-color);
+body {
+    transition: background-color 0.4s ease;
+}
+
+.matrix-box,
+.metric-card-simple,
+.card,
+.matrix-box .m-count,
+.metric-card-simple .m-value,
+.matrix-box .m-text,
+.metric-card-simple .m-label {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Hover effects  */
+.matrix-box:hover,
+.metric-card-simple:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    filter: brightness(1) !important;
+}
+
+.matrix-box.tn:hover,
+.matrix-box.tp:hover {
+    background-color: #F0FDF4 !important;
+}
+
+.matrix-box.fp:hover,
+.matrix-box.fn:hover {
+    background-color: #FFF7ED !important;
+}
+
+.metric-card-simple.blue:hover {
+    background-color: #EFF6FF !important;
+}
+
+.metric-card-simple.green:hover {
+    background-color: #ECFDF5 !important;
+}
+
+.metric-card-simple.purple:hover {
+    background-color: #F5F3FF !important;
+}
+
+.metric-card-simple.orange:hover {
+    background-color: #FFF7ED !important;
+}
+
+.dark-theme .matrix-box:hover,
+.dark-theme .metric-card-simple:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    filter: brightness(1) !important;
+}
+
+.dark-theme {
+    --bg-color: #1a2230 !important;
+    --card-bg: #232d3d;
+    --text-main: #f8fafc;
+}
+
+.dark-theme .model-dropdown {
+    background-color: #1a2230 !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394A3B8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+}
+
+.dark-theme .model-dropdown option {
+    background-color: #1a2230;
+    color: #f8fafc;
+}
+
+.dark-theme .card {
+    background-color: #1a2230;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Confusion Matrix Styling */
+.matrix-box {
+    border-width: 2px !important;
+}
+
+.dark-theme .matrix-box.tn,
+.dark-theme .matrix-box.tp {
+    background-color: rgba(16, 45, 45, 0.6) !important;
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+}
+
+.dark-theme .matrix-box.fp,
+.dark-theme .matrix-box.fn {
+    background-color: rgba(45, 35, 25, 0.6) !important;
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+}
+
+.dark-theme .matrix-box .m-count {
+    color: inherit;
+    font-size: 2.25rem;
+    font-weight: 700;
+}
+
+.dark-theme .matrix-box .m-text {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Footer */
+.footer-label {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+}
+
+/* Metric Cards  */
+.metric-card-simple {
+    border-width: 2px !important;
+}
+
+.dark-theme .metric-card-simple.blue {
+    background-color: rgba(30, 48, 80, 0.6) !important;
+    border-color: #2563eb !important;
+}
+
+.dark-theme .metric-card-simple.green {
+    background-color: rgba(30, 45, 45, 0.6) !important;
+    border-color: #059669 !important;
+}
+
+.dark-theme .metric-card-simple.purple {
+    background-color: rgba(40, 35, 60, 0.6) !important;
+    border-color: #7c3aed !important;
+}
+
+.dark-theme .metric-card-simple.orange {
+    background-color: rgba(45, 35, 35, 0.6) !important;
+    border-color: #ea580c !important;
+}
+
+/* Metric Value Colors */
+.dark-theme .metric-card-simple.blue .m-value {
+    color: #60a5fa !important;
+}
+
+.dark-theme .metric-card-simple.green .m-value {
+    color: #34d399 !important;
+}
+
+.dark-theme .metric-card-simple.purple .m-value {
+    color: #a78bfa !important;
+}
+
+.dark-theme .metric-card-simple.orange .m-value {
+    color: #fb923c !important;
+}
+
+.dark-theme .metric-card-simple .m-label {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.dark-theme .interpretation-box {
+    background-color: #1a2233 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #94a3b8 !important;
+}
+
+/* Responsive  */
+@media (max-width: 992px) {
+    .performance-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
     }
+}
+
+@media (max-width: 768px) {
+    .matrix-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .matrix-box {
+        width: 100% !important;
+        height: 140px !important;
+    }
+
+    .matrix-box .m-count {
+        font-size: 1.75rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .performance-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .matrix-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .matrix-box {
+        height: 120px !important;
+    }
+}

@@ -73,10 +73,9 @@
                     <div class="m-text">True Positive</div>
                 </div>
 
-                <!-- Labels positioned below columns using grid/absolute -->
                 <div class="matrix-footer-labels">
-                    <div class="footer-label">Actual: Not Default</div>
-                    <div class="footer-label">Actual: Default</div>
+                    <div class="footer-label">Predicted: Not Default</div>
+                    <div class="footer-label">Predicted: Default</div>
                 </div>
             </div>
 
@@ -176,7 +175,6 @@
                 backgroundColor: function (context) {
                     const index = context.dataIndex;
                     const value = context.dataset.data[index];
-                    // Highlight the highest value
                     return index === 0 ? '#10B981' : '#3B82F6';
                 },
                 borderRadius: 8,

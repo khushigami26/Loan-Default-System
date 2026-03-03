@@ -1,0 +1,17 @@
+{
+  "dataset": {
+    "original_records": 255347,
+    "original_columns": 18,
+    "after_cleaning": 225694,
+    "removed_records": 29653,
+    "features_used": 17
+  },
+  "models": {
+    "lr_manual_acc": 0.8840,
+    "lr_sklearn_acc": 0.88515,
+    "dt_acc": 0.80279,
+    "rf_acc": 0.88488,
+    "best_model_name": "Logistic Regression"
+  }
+}
+

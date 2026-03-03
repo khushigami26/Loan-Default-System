@@ -1,11 +1,42 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, current_app
+from flask import (
+    Blueprint, render_template, redirect, url_for, request, flash, current_app
+)
 from flask_login import login_required, current_user
 from models import PredictionHistory
 from datetime import datetime, timedelta
+import os
+import json
 import pandas as pd
 import warnings
 
 main = Blueprint('main', __name__)
+
+
+def _load_metadata():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    metadata_path = os.path.join(base_dir, "model", "metadata.json")
+    try:
+        with open(metadata_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        # Fallback to current hard-coded values if metadata is missing
+        # or invalid
+        return {
+            "dataset": {
+                "original_records": 255347,
+                "original_columns": 18,
+                "after_cleaning": 225694,
+                "removed_records": 29653,
+                "features_used": 17,
+            },
+            "models": {
+                "lr_manual_acc": 0.8840,
+                "lr_sklearn_acc": 0.88515,
+                "dt_acc": 0.80279,
+                "rf_acc": 0.88488,
+                "best_model_name": "Logistic Regression",
+            },
+        }
 
 
 @main.route("/")
@@ -22,21 +53,26 @@ def dashboard():
 @main.route("/loan-default")
 @login_required
 def loan_default_dashboard():
-    # Dataset overview
-    original_records = 255347
-    original_columns = 18
-    after_cleaning = 225694
-    removed_records = 29653
-    features_used = 17
+    metadata = _load_metadata()
+    dataset = metadata.get("dataset", {})
+    models = metadata.get("models", {})
 
-    # Model Accuracies
-    lr_manual_acc = 0.8840
-    lr_sklearn_acc = 0.88515  # Best model
-    dt_acc = 0.80279
-    rf_acc = 0.88488
+    original_records = dataset.get("original_records", 0)
+    original_columns = dataset.get("original_columns", 0)
+    after_cleaning = dataset.get("after_cleaning", 0)
+    removed_records = dataset.get("removed_records", 0)
+    features_used = dataset.get("features_used", 0)
 
-    not_default_pct = round(225694 / 255347 * 100, 1)
-    default_pct = round(29653 / 255347 * 100, 1)
+    lr_manual_acc = models.get("lr_manual_acc", 0.0)
+    lr_sklearn_acc = models.get("lr_sklearn_acc", 0.0)
+    dt_acc = models.get("dt_acc", 0.0)
+    rf_acc = models.get("rf_acc", 0.0)
+    best_model_name = models.get("best_model_name", "Logistic Regression")
+
+    not_default_pct = round(after_cleaning / original_records * 100, 1) \
+        if original_records else 0
+    default_pct = round(removed_records / original_records * 100, 1) \
+        if original_records else 0
     return render_template(
         "dashboard.html",
         original_records=f"{original_records:,}",
@@ -44,7 +80,7 @@ def loan_default_dashboard():
         after_cleaning=f"{after_cleaning:,}",
         features_count=features_used,
         removed_records=f"{removed_records:,}",
-        best_model_name="Logistic Regression",
+        best_model_name=best_model_name,
         best_model_accuracy=lr_sklearn_acc,
         lr_manual_accuracy=lr_manual_acc,
         lr_sklearn_accuracy=lr_sklearn_acc,
@@ -58,10 +94,13 @@ def loan_default_dashboard():
 @main.route("/loan-default/model-performance")
 @login_required
 def loan_default_model_performance():
-    lr_sklearn_acc = 0.88515
-    rf_acc = 0.88488
-    lr_manual_acc = 0.8840
-    dt_acc = 0.80279
+    metadata = _load_metadata()
+    models = metadata.get("models", {})
+
+    lr_sklearn_acc = models.get("lr_sklearn_acc", 0.0)
+    rf_acc = models.get("rf_acc", 0.0)
+    lr_manual_acc = models.get("lr_manual_acc", 0.0)
+    dt_acc = models.get("dt_acc", 0.0)
 
     return render_template(
         "model_performance.html",
@@ -76,70 +115,6 @@ def loan_default_model_performance():
 @login_required
 def loan_default_feature_insights():
     return render_template("feature_insights.html")
-
-
-@main.route("/api/dashboard-data")
-@login_required
-def dashboard_data():
-    total_live_apps = PredictionHistory.objects.count()
-    rejected_count = PredictionHistory.objects(prediction__icontains='Default').count()
-    approved_count = total_live_apps - rejected_count
-
-    avg_income_val = PredictionHistory.objects.average('income') or 0
-    avg_loan_val = PredictionHistory.objects.average('loan_amount') or 0
-
-    summary = {
-        "rejected_loans": rejected_count,
-        "total_applications": total_live_apps,
-        "avg_income": round(avg_income_val, 2),
-        "approved_loans": approved_count,
-        "avg_credit_amount": round(avg_loan_val, 2),
-    }
-
-    loan_status_by_gender = {
-        "labels": ["House/apartme...", "With parents", "Municipal apartme...", "Rented apartme...", "Office apartme...", "Co-op apartme.."],
-        "series": [
-            {"label": "Approved", "data": [91.62, 88.20, 91.01, 87.45, 93.35, 91.65]},
-            {"label": "Rejected", "data": [8.38, 11.80, 8.99, 12.55, 6.65, 8.35]},
-        ],
-    }
-
-    applicants_by_education = {
-        "labels": ["Secondary / se...", "Higher education", "Other", "Other2"],
-        "data": [69, 26, 3, 2],
-    }
-
-    applicants_by_income_type = {
-        "labels": ["Working", "Commercial as...", "State serva..."],
-        "data": [63, 28, 9],
-    }
-
-    credit_amount_distribution = {
-        "labels": ["0M", "1M", "2M", "3M", "4M"],
-        "data": [22000, 18000, 15000, 12000, 8000],
-    }
-
-    top_occupations = {
-        "labels": [
-            "Business Entity...", "Self-employed", "Other", "Medicine",
-            "Business Entity Type 2", "Government", "School", "Trade: type 7",
-            "Kindergarten", "Construction", "Human Resources", "Cooking",
-            "Education", "Banking", "Insurance"
-        ],
-        "primary": [17.1, 15.8, 12.5, 10.2, 9.5, 8.3, 7.1, 6.2, 5.4, 4.8, 4.0, 3.5, 3.0, 2.5, 2.0],
-        "secondary": [1.8, 1.5, 1.2, 1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.2, 0.1, 0.1],
-    }
-
-    return jsonify(
-        {
-            "summary": summary,
-            "loan_status_by_gender": loan_status_by_gender,
-            "applicants_by_education": applicants_by_education,
-            "applicants_by_income_type": applicants_by_income_type,
-            "credit_amount_distribution": credit_amount_distribution,
-            "top_occupations": top_occupations,
-        }
-    )
 
 
 @main.route("/loan", methods=["GET", "POST"])
@@ -157,7 +132,11 @@ def loan():
                 return render_template("loan_form.html")
 
             features_dict = {name: 0 for name in feature_names}
-            numeric_fields = ["Age", "Income", "LoanAmount", "CreditScore", "MonthsEmployed", "NumCreditLines", "InterestRate", "LoanTerm", "DTIRatio"]
+            numeric_fields = [
+                "Age", "Income", "LoanAmount", "CreditScore",
+                "MonthsEmployed", "NumCreditLines", "InterestRate",
+                "LoanTerm", "DTIRatio"
+            ]
 
             for f in numeric_fields:
                 val = request.form.get(f)
@@ -170,11 +149,22 @@ def loan():
                     flash(f"Invalid numeric value for: {f}", "error")
                     return render_template("loan_form.html")
 
-            features_dict["HasMortgage"] = 1 if request.form.get("HasMortgage") else 0
-            features_dict["HasDependents"] = 1 if request.form.get("HasDependents") else 0
-            features_dict["HasCoSigner"] = 1 if request.form.get("HasCoSigner") else 0
+            features_dict["HasMortgage"] = (
+                1 if request.form.get("HasMortgage") else 0
+            )
+            features_dict["HasDependents"] = (
+                1 if request.form.get("HasDependents") else 0
+            )
+            features_dict["HasCoSigner"] = (
+                1 if request.form.get("HasCoSigner") else 0
+            )
 
-            for cat, field in [("Education", "Education"), ("EmploymentType", "EmploymentType"), ("MaritalStatus", "MaritalStatus"), ("LoanPurpose", "LoanPurpose")]:
+            for cat, field in [
+                ("Education", "Education"),
+                ("EmploymentType", "EmploymentType"),
+                ("MaritalStatus", "MaritalStatus"),
+                ("LoanPurpose", "LoanPurpose")
+            ]:
                 val = request.form.get(field)
                 if val:
                     key = f"{cat}_{val}"
@@ -198,7 +188,8 @@ def loan():
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 prediction = model.predict(features_df)[0]
-            result = "Loan Will Default \u274C" if prediction == 1 else "Loan Approved \u2705"
+            result = ("Loan Will Default \u274C" if prediction == 1
+                      else "Loan Approved \u2705")
 
             history = PredictionHistory(
                 user_id=current_user.pk,
@@ -214,7 +205,10 @@ def loan():
             )
             history.save()
 
-            return render_template("result.html", result=result, model_name=model_name, features=features_dict)
+            return render_template(
+                "result.html", result=result,
+                model_name=model_name, features=features_dict
+            )
 
         except Exception as e:
             flash(f"Prediction Error: {e}", "error")
@@ -232,7 +226,14 @@ def profile():
 @main.route("/prediction-history")
 @login_required
 def prediction_history():
-    two_days_ago = datetime.utcnow() - timedelta(days=2)
-    PredictionHistory.objects(user_id=current_user.pk, date__lt=two_days_ago).delete()
-    predictions = PredictionHistory.objects(user_id=current_user.pk).order_by('-date')
-    return render_template("prediction_history.html", predictions=predictions)
+    days = int(os.environ.get("PREDICTION_HISTORY_DAYS", "30"))
+    cutoff = datetime.utcnow() - timedelta(days=days)
+    PredictionHistory.objects(
+        user_id=current_user.pk, date__lt=cutoff
+    ).delete()
+    predictions = PredictionHistory.objects(
+        user_id=current_user.pk
+    ).order_by('-date')
+    return render_template(
+        "prediction_history.html", predictions=predictions
+    )

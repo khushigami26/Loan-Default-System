@@ -12,8 +12,11 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        if len(password) < 6:
-            flash("Password must be at least 6 characters", "error")
+        if (len(password) < 8 or
+                not any(c.isalpha() for c in password) or
+                not any(c.isdigit() for c in password)):
+            flash(("Password must be at least 8 characters and include "
+                   "letters and numbers."), "error")
             return redirect(url_for("auth.register"))
 
         existing_user = User.objects(username=username).first()
@@ -26,7 +29,7 @@ def register():
         new_user.save()
 
         flash("Registration successful. Please login.", "success")
-        return redirect(url_for("auth.login", username=username, password=password))
+        return redirect(url_for("auth.login", username=username))
 
     return render_template("register.html")
 
@@ -34,7 +37,6 @@ def register():
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     username_val = request.args.get('username', '')
-    password_val = request.args.get('password', '')
 
     if request.method == "POST":
         username = request.form["username"]
@@ -50,7 +52,7 @@ def login():
         else:
             flash("Invalid username or password", "error")
 
-    return render_template("login.html", username=username_val, password=password_val)
+    return render_template("login.html", username=username_val, password="")
 
 
 @auth.route("/logout")

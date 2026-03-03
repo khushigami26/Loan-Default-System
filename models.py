@@ -1,4 +1,6 @@
-from mongoengine import Document, StringField, FloatField, ReferenceField, DateTimeField
+from mongoengine import (
+    Document, StringField, FloatField, ReferenceField, DateTimeField
+)
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -23,3 +25,10 @@ class PredictionHistory(Document):
     dti_ratio = FloatField()
 
     date = DateTimeField(default=datetime.utcnow)
+
+    meta = {
+        "indexes": [
+            "user_id",
+            "-date",
+        ]
+    }

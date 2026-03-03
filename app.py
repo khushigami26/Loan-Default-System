@@ -5,6 +5,7 @@ from flask import Flask
 from flask_login import LoginManager
 from dotenv import load_dotenv
 from mongoengine import connect, disconnect
+from flask_wtf import CSRFProtect
 from models import User
 from auth import auth as auth_blueprint
 from main import main as main_blueprint
@@ -14,7 +15,19 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+    # Basic configuration
+    secret_key = os.environ.get("SECRET_KEY")
+    app.config["SECRET_KEY"] = secret_key
+
+    # Session & cookie security
+    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)
+    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
+    if os.environ.get("RENDER") is not None:
+        app.config.setdefault("SESSION_COOKIE_SECURE", True)
+
+    # CSRF protection
+    CSRFProtect(app)
 
     @app.route("/health")
     def health():
@@ -47,7 +60,9 @@ def create_app():
             return None
 
     # Load ML Model
-    MODEL_PATH = os.path.join(os.path.dirname(__file__), "model", "loan_default_model.pkl")
+    MODEL_PATH = os.path.join(
+        os.path.dirname(__file__), "model", "loan_default_model.pkl"
+    )
     try:
         if os.path.exists(MODEL_PATH):
             with open(MODEL_PATH, "rb") as file:

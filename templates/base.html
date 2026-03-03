@@ -4,13 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loan Default System</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+  <script>
+    (function () {
+      const SIDEBAR_COLLAPSED_KEY = "sidebar_collapsed";
+      const savedCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "1";
+      if (savedCollapsed) {
+        document.documentElement.classList.add('sidebar-is-collapsed');
+      }
+    })();
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 
@@ -35,6 +39,8 @@
       const mobileToggle = document.getElementById("mobile-toggle");
       const sidebar = document.querySelector(".sidebar");
       const sidebarClose = document.getElementById("sidebar-close");
+      const sidebarCollapse = document.getElementById("sidebar-collapse");
+      const SIDEBAR_COLLAPSED_KEY = "sidebar_collapsed";
 
       if (mobileToggle && sidebar) {
         mobileToggle.addEventListener("click", () => {
@@ -53,6 +59,27 @@
           sidebar.classList.remove("active");
         }
       });
+
+      // Sync sidebar state from document class if needed
+      if (sidebar) {
+        const isCollapsed = document.documentElement.classList.contains('sidebar-is-collapsed');
+        if (isCollapsed) {
+          sidebar.classList.add('collapsed');
+        }
+        if (sidebarCollapse) {
+          sidebarCollapse.setAttribute("aria-expanded", String(!sidebar.classList.contains('collapsed')));
+        }
+      }
+
+      if (sidebarCollapse && sidebar) {
+        sidebarCollapse.addEventListener("click", () => {
+          const nextCollapsed = !sidebar.classList.contains("collapsed");
+          sidebar.classList.toggle("collapsed", nextCollapsed);
+          document.documentElement.classList.toggle('sidebar-is-collapsed', nextCollapsed);
+          localStorage.setItem(SIDEBAR_COLLAPSED_KEY, nextCollapsed ? "1" : "0");
+          sidebarCollapse.setAttribute("aria-expanded", String(!nextCollapsed));
+        });
+      }
 
       if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark-theme");

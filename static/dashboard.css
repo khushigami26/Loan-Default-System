@@ -859,37 +859,39 @@ body {
 .heatmap-wrapper {
   position: relative;
   display: inline-block;
-  margin-top: 140px;
-  margin-left: 160px;
+  margin-top: 110px;
+  margin-left: 140px;
   background-color: transparent;
 }
 
 .heatmap-grid {
   display: grid;
-  grid-template-columns: repeat(18, 38px);
-  grid-template-rows: repeat(18, 38px);
-  gap: 1.5px;
+  grid-template-columns: repeat(16, 45px);
+  grid-template-rows: repeat(16, 45px);
+  gap: 2px;
 }
 
 /* Labels */
 .heatmap-label-top {
   position: absolute;
-  top: -26px;
+  top: -80px;
   left: 0;
   display: flex;
   width: 100%;
+  gap: 2px;
 }
 
 .heatmap-label-top span {
-  width: 38.5px;
-  transform: rotate(-90deg) translateX(38px);
-  transform-origin: left bottom;
-  font-size: 0.65rem;
+  width: 50px;
+  transform: rotate(-90deg);
+  transform-origin: center bottom;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-main);
   white-space: nowrap;
   display: inline-block;
-  text-align: left;
+  text-align: center;
+  padding-bottom: 15px;
 }
 
 .heatmap-label-left {
@@ -901,12 +903,12 @@ body {
 }
 
 .heatmap-label-left span {
-  height: 39.5px;
+  height: 47px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding-right: 1.25rem;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-main);
   width: 160px;
@@ -915,14 +917,14 @@ body {
 
 /* Heatmap Cells */
 .heatmap-cell {
-  width: 38px;
-  height: 38px;
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  border-radius: 2px;
+  border-radius: 4px;
   color: #000;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }

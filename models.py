@@ -17,7 +17,7 @@ class PredictionHistory(Document):
     model_used = StringField(max_length=50, required=True)
     prediction = StringField(max_length=50, required=True)
 
-    # Detailed fields
+    #  fields
     credit_score = FloatField()
     interest_rate = FloatField()
     loan_term = FloatField()

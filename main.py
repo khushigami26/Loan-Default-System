@@ -19,15 +19,13 @@ def _load_metadata():
         with open(metadata_path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
-        # Fallback to current hard-coded values if metadata is missing
-        # or invalid
         return {
             "dataset": {
                 "original_records": 255347,
                 "original_columns": 18,
                 "after_cleaning": 225694,
                 "removed_records": 29653,
-                "features_used": 17,
+                "features_used": 16,
             },
             "models": {
                 "lr_manual_acc": 0.8840,
@@ -73,6 +71,16 @@ def loan_default_dashboard():
         if original_records else 0
     default_pct = round(removed_records / original_records * 100, 1) \
         if original_records else 0
+
+    # Determine accuracy for the best model name
+    best_model_accuracy = models.get("lr_manual_acc", 0.0)
+    if best_model_name == "Random Forest Classifier":
+        best_model_accuracy = models.get("rf_acc", 0.0)
+    elif best_model_name == "Sklearn Logistic Regression":
+        best_model_accuracy = models.get("lr_sklearn_acc", 0.0)
+    elif best_model_name == "Decision Tree Classifier":
+        best_model_accuracy = models.get("dt_acc", 0.0)
+
     return render_template(
         "dashboard.html",
         original_records=f"{original_records:,}",
@@ -81,7 +89,7 @@ def loan_default_dashboard():
         features_count=features_used,
         removed_records=f"{removed_records:,}",
         best_model_name=best_model_name,
-        best_model_accuracy=lr_sklearn_acc,
+        best_model_accuracy=best_model_accuracy,
         lr_manual_accuracy=lr_manual_acc,
         lr_sklearn_accuracy=lr_sklearn_acc,
         rf_accuracy=rf_acc,
@@ -114,7 +122,14 @@ def loan_default_model_performance():
 @main.route("/loan-default/feature-insights")
 @login_required
 def loan_default_feature_insights():
-    return render_template("feature_insights.html")
+    metadata = _load_metadata()
+    models = metadata.get("models", {})
+    lr_manual_acc = models.get("lr_manual_acc", 0.0)
+
+    return render_template(
+        "feature_insights.html",
+        lr_manual_accuracy=lr_manual_acc
+    )
 
 
 @main.route("/loan", methods=["GET", "POST"])
@@ -124,67 +139,98 @@ def loan():
     if model is None:
         return "Model not loaded. Check model file."
 
+    metadata = _load_metadata()
+    models_metadata = metadata.get("models", {})
+    context = {
+        "lr_manual_accuracy": models_metadata.get("lr_manual_acc", 0.0),
+        "lr_sklearn_accuracy": models_metadata.get("lr_sklearn_acc", 0.0),
+        "rf_accuracy": models_metadata.get("rf_acc", 0.0),
+        "dt_accuracy": models_metadata.get("dt_acc", 0.0)
+    }
+
+    # The 24 dummy features expected by the trained model (from get_dummies(drop_first=True))
+    feature_names = [
+        'Age', 'Income', 'LoanAmount', 'CreditScore', 'MonthsEmployed',
+        'NumCreditLines', 'InterestRate', 'LoanTerm', 'DTIRatio',
+        'Education_High School', "Education_Master's", 'Education_PhD',
+        'EmploymentType_Part-time', 'EmploymentType_Self-employed', 'EmploymentType_Unemployed',
+        'MaritalStatus_Married', 'MaritalStatus_Single',
+        'HasMortgage_Yes', 'HasDependents_Yes',
+        'LoanPurpose_Business', 'LoanPurpose_Education', 'LoanPurpose_Home', 'LoanPurpose_Other',
+        'HasCoSigner_Yes'
+    ]
+
     if request.method == "POST":
         try:
-            feature_names = getattr(model, "feature_names_in_", None)
-            if feature_names is None:
-                flash("Model does not expose expected feature names.", "error")
-                return render_template("loan_form.html")
-
-            features_dict = {name: 0 for name in feature_names}
+            # Initialize all 24 features to 0
+            features_dict = {name: 0.0 for name in feature_names}
+            
+            # Numeric fields (first 9)
             numeric_fields = [
                 "Age", "Income", "LoanAmount", "CreditScore",
                 "MonthsEmployed", "NumCreditLines", "InterestRate",
                 "LoanTerm", "DTIRatio"
             ]
-
             for f in numeric_fields:
                 val = request.form.get(f)
-                if val is None or val == "":
-                    flash(f"Missing numeric field: {f}", "error")
-                    return render_template("loan_form.html")
-                try:
-                    features_dict[f] = float(val)
-                except ValueError:
-                    flash(f"Invalid numeric value for: {f}", "error")
-                    return render_template("loan_form.html")
-
-            features_dict["HasMortgage"] = (
-                1 if request.form.get("HasMortgage") else 0
-            )
-            features_dict["HasDependents"] = (
-                1 if request.form.get("HasDependents") else 0
-            )
-            features_dict["HasCoSigner"] = (
-                1 if request.form.get("HasCoSigner") else 0
-            )
-
-            for cat, field in [
-                ("Education", "Education"),
-                ("EmploymentType", "EmploymentType"),
-                ("MaritalStatus", "MaritalStatus"),
-                ("LoanPurpose", "LoanPurpose")
-            ]:
-                val = request.form.get(field)
                 if val:
-                    key = f"{cat}_{val}"
-                    if key in features_dict:
-                        features_dict[key] = 1
-                else:
-                    flash(f"Please select {field}", "error")
-                    return render_template("loan_form.html")
+                    try:
+                        features_dict[f] = float(val)
+                    except ValueError:
+                        flash(f"Invalid numeric value for: {f}", "error")
+                        return render_template("loan_form.html", **context)
+
+            # Categorical fields (Dummy Encoding)
+            # Education
+            edu = request.form.get("Education")
+            if edu:
+                key = f"Education_{edu}"
+                if key in features_dict:
+                    features_dict[key] = 1.0
+            
+            # EmploymentType
+            emp = request.form.get("EmploymentType")
+            if emp:
+                key = f"EmploymentType_{emp}"
+                if key in features_dict:
+                    features_dict[key] = 1.0
+
+            # MaritalStatus
+            mar = request.form.get("MaritalStatus")
+            if mar:
+                key = f"MaritalStatus_{mar}"
+                if key in features_dict:
+                    features_dict[key] = 1.0
+
+            # Binary Fields
+            if request.form.get("HasMortgage"):
+                features_dict["HasMortgage_Yes"] = 1.0
+            if request.form.get("HasDependents"):
+                features_dict["HasDependents_Yes"] = 1.0
+            if request.form.get("HasCoSigner"):
+                features_dict["HasCoSigner_Yes"] = 1.0
+
+            # LoanPurpose
+            pur = request.form.get("LoanPurpose")
+            if pur:
+                key = f"LoanPurpose_{pur}"
+                if key in features_dict:
+                    features_dict[key] = 1.0
+
+            # Construct input vector in exactly the order defined in feature_names
+            ordered_values = [features_dict[name] for name in feature_names]
 
             model_type = request.form.get("model_type", "lr_sklearn")
             model_mapping = {
-                "lr_sklearn": "Logistic Regression (Sklearn)",
+                "lr_sklearn": "Sklearn Logistic Regression",
                 "rf": "Random Forest Classifier",
                 "lr_manual": "Custom Logistic Regression",
                 "dt": "Decision Tree Classifier"
             }
             model_name = model_mapping.get(model_type, "Selected Model")
-
-            ordered = [features_dict[name] for name in feature_names]
-            features_df = pd.DataFrame([ordered], columns=list(feature_names))
+            
+            # Use the model to predict
+            features_df = pd.DataFrame([ordered_values], columns=feature_names)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 prediction = model.predict(features_df)[0]
@@ -212,9 +258,9 @@ def loan():
 
         except Exception as e:
             flash(f"Prediction Error: {e}", "error")
-            return render_template("loan_form.html")
+            return render_template("loan_form.html", **context)
 
-    return render_template("loan_form.html")
+    return render_template("loan_form.html", **context)
 
 
 @main.route("/profile")

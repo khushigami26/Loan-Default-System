@@ -40,10 +40,10 @@
         <div class="form-group" style="max-width: 500px;">
           <label for="model_type">Select Algorithm</label>
           <select id="model_type" name="model_type" class="form-control">
-            <option value="lr_sklearn" selected>Sklearn Logistic Regression - Recommended (88.52%)</option>
-            <option value="rf">Random Forest Classifier (88.49%)</option>
-            <option value="lr_manual">Custom Logistic Regression (88.40%)</option>
-            <option value="dt">Decision Tree Classifier (80.28%)</option>
+            <option value="lr_manual" selected>Custom Logistic Regression ({{ "%.2f"|format(lr_manual_accuracy * 100) }}%)</option>
+            <option value="rf">Random Forest Classifier ({{ "%.2f"|format(rf_accuracy * 100) }}%)</option>
+            <option value="lr_sklearn">Sklearn Logistic Regression ({{ "%.2f"|format(lr_sklearn_accuracy * 100) }}%)</option>
+            <option value="dt">Decision Tree Classifier ({{ "%.2f"|format(dt_accuracy * 100) }}%)</option>
           </select>
         </div>
       </div>

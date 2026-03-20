@@ -16,24 +16,23 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
-    # Basic configuration
     secret_key = os.environ.get("SECRET_KEY")
     app.config["SECRET_KEY"] = secret_key
 
-    # Session & cookie security
-    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)
-    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
+    # Session security
+    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)  # protect cookies
+    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")  # prevent CSRF
     if os.environ.get("RENDER") is not None:
         app.config.setdefault("SESSION_COOKIE_SECURE", True)
 
-    # CSRF protection
+    #  protection
     CSRFProtect(app)
 
-    @app.route("/health")
+    @app.route("/health")  # API to check if app is running
     def health():
         return {"status": "healthy", "mongodb": "checking..."}, 200
 
-    # MongoDB Atlas connection
+    # MongoDB  connection
     atlas_host = os.environ.get("MONGODB_URL")
     if not atlas_host:
         print("MONGODB_URL environment variable is missing!")
@@ -43,7 +42,8 @@ def create_app():
         connect(
             host=atlas_host,
             tlsCAFile=certifi.where(),
-            serverSelectionTimeoutMS=5000
+            serverSelectionTimeoutMS=5000,
+            uuidRepresentation='standard'
         )
     except Exception as e:
         print(f"MongoDB connection failed: {e}")
@@ -59,7 +59,7 @@ def create_app():
         except Exception:
             return None
 
-    # Load ML Model
+    # Load  Model
     MODEL_PATH = os.path.join(
         os.path.dirname(__file__), "model", "loan_default_model.pkl"
     )
@@ -74,7 +74,6 @@ def create_app():
         app.ml_model = None
         print(f"Error loading model: {e}")
 
-    # Register blueprints
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)
 

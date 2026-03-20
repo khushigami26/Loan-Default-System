@@ -47,7 +47,7 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash("Logged in successfully!!", "success")
-            # After login, navigate  to  dashboard
+
             return redirect(url_for("main.dashboard"))
         else:
             flash("Invalid username or password", "error")

@@ -1,13 +1,13 @@
 {
   "best_model": {
-    "name": "Logistic Regression",
-    "accuracy": 0.88515
+    "name": "Custom Logistic Regression",
+    "accuracy": 0.87838
   },
   "models": {
-    "logistic_regression": 0.88515,
-    "custom_logistic_regression": 0.8840,
-    "decision_tree": 0.80279,
-    "random_forest": 0.88488
+    "logistic_regression": 0.67856,
+    "custom_logistic_regression": 0.87838,
+    "decision_tree": 0.66821,
+    "random_forest": 0.73074
   },
   "dataset_distribution": {
     "not_default_percent": 88.40,

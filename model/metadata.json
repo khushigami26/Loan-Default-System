@@ -4,14 +4,14 @@
     "original_columns": 18,
     "after_cleaning": 225694,
     "removed_records": 29653,
-    "features_used": 17
+    "features_used": 16
   },
   "models": {
-    "lr_manual_acc": 0.8840,
-    "lr_sklearn_acc": 0.88515,
-    "dt_acc": 0.80279,
-    "rf_acc": 0.88488,
-    "best_model_name": "Logistic Regression"
+    "lr_manual_acc": 0.8784,
+    "lr_sklearn_acc": 0.6786,
+    "dt_acc": 0.6682,
+    "rf_acc": 0.7307,
+    "best_model_name": "Custom Logistic Regression"
   }
 }
 

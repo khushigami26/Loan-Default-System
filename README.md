@@ -74,19 +74,19 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 
 | Model | Accuracy | Status |
 |---|---|---|
-| ✅ Sklearn Logistic Regression | **88.52%** | **Best Model** |
-| Random Forest Classifier | 88.49% | — |
-| Custom Logistic Regression | 88.40% | — |
-| Decision Tree Classifier | 80.28% | — |
+| ✅ Custom Logistic Regression | **87.84%** | **Best Model** |
+| Random Forest Classifier | 73.07% | — |
+| Sklearn Logistic Regression | 67.86% | — |
+| Decision Tree Classifier | 66.82% | — |
 
-**Best Model Metrics (Logistic Regression):**
+**Best Model Metrics (Custom Logistic Regression):**
 
 | Metric | Value |
 |---|---|
-| Accuracy | 88.52% |
-| Precision | 50.2% |
-| Recall | 92.7% |
-| F1 Score | 65.1% |
+| Accuracy | 87.84% |
+| Precision | 49.8% |
+| Recall | 90.5% |
+| F1 Score | 64.3% |
 
 ---
 
@@ -96,7 +96,7 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 |---|---|
 | Original Records | 255,347 |
 | After Cleaning | 225,694 |
-| Features Used | 17 |
+| Features Used | 16 |
 | Target Variable | `LoanStatus` (0 = No Default, 1 = Default) |
 | Train / Test Split | 80% / 20% (Stratified) |
 

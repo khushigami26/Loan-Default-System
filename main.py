@@ -131,8 +131,9 @@ def loan_default_feature_insights():
 @main.route("/loan", methods=["GET", "POST"])
 @login_required
 def loan():
-    model = getattr(current_app, 'ml_model', None)
-    if model is None:
+    # Check if any specialized models are loaded
+    models = getattr(current_app, 'ml_models', {})
+    if not models:
         return "Model not loaded. Check model file."
 
     metadata = _load_metadata()

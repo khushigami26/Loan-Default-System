@@ -9,7 +9,7 @@
       <h1 class="page-title">Feature Insights</h1>
     </header>
 
-    <!-- Feature Selection Section -->
+    <!-- Feature Selection  -->
     <div class="card feature-selection-card">
       <div class="card-header-feature">
         <div class="header-icon-box">
@@ -35,7 +35,9 @@
           <div class="f-label">Primary Predictors</div>
         </div>
         <div class="f-metric-card purple">
-          <div class="f-val">{{ "%.2f"|format(lr_manual_accuracy * 100) }}%</div>
+          <div class="f-val">
+            {{ "%.2f"|format(lr_manual_accuracy * 100) }}%
+          </div>
           <div class="f-label">Model Accuracy</div>
         </div>
       </div>
@@ -73,7 +75,7 @@
       </p>
     </div>
 
-    <!-- Feature Correlation Heatmap  -->
+    <!-- Heatmap  -->
     <div class="card">
       <h3>Feature Correlation Heatmap</h3>
       <p class="text-muted-sm mb-2 mt-n0-5">
@@ -83,7 +85,7 @@
 
       <div class="heatmap-container">
         <div class="heatmap-wrapper">
-          <!-- Top Labels (Diagonal) -->
+          <!-- Top Labels -->
           <div class="heatmap-label-top">
             <span>Age</span>
             <span>Income</span>
@@ -173,7 +175,7 @@
     return "c-n022";
   }
 
-  // Seed-based
+  // Seed based
   const correlations = [];
   for (let i = 0; i < 16; i++) {
     let row = [];
@@ -182,7 +184,7 @@
       else {
         let val = Math.sin(i * 10 + j) * 0.25;
 
-        // Add specific high correlation
+        // high correlation
         if ((i === 1 && j === 2) || (i === 2 && j === 1)) val = 0.72; // Income & LoanAmount
         if ((i === 0 && j === 3) || (i === 3 && j === 0)) val = 0.58; // Age & CreditScore
         if ((i === 5 && j === 8) || (i === 8 && j === 5)) val = 0.45; // NumCredits & DTIRatio

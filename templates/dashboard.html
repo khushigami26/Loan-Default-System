@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <!-- Stats Row -->
+    <!-- Status Row -->
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-icon blue">
@@ -128,41 +128,15 @@
 
     <!--  algo grid -->
     <div class="card">
-      <h3>Machine Learning Algorithms</h3>
+      <h3>Machine Learning Algorithms - Performance Overview</h3>
       <div class="model-grid">
-        <!-- Logistic (Manual) -->
-        <div class="model-box best">
-          <div class="model-header">
-            <span class="model-name">Custom Logistic Regression</span>
-            <i class="fas fa-check-circle check-icon"></i>
-          </div>
-          <div class="accuracy-score">
-            {{ "%.2f"|format(lr_manual_accuracy * 100) }}%
-          </div>
-          <div class="accuracy-label">Accuracy Score</div>
-        </div>
-
         <!-- Random Forest -->
-        <div class="model-box">
+        <div class="model-box best">
           <div class="model-header">
             <span class="model-name">Random Forest Classifier</span>
             <i class="fas fa-check-circle check-icon"></i>
           </div>
-          <div class="accuracy-score">
-            {{ "%.2f"|format(rf_accuracy * 100) }}%
-          </div>
-          <div class="accuracy-label">Accuracy Score</div>
-        </div>
-
-        <!-- Logistic (Sklearn) -->
-        <div class="model-box">
-          <div class="model-header">
-            <span class="model-name">Sklearn Logistic Regression</span>
-            <i class="fas fa-check-circle check-icon"></i>
-          </div>
-          <div class="accuracy-score">
-            {{ "%.2f"|format(lr_sklearn_accuracy * 100) }}%
-          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(metrics.rf.accuracy * 100) }}%</div>
           <div class="accuracy-label">Accuracy Score</div>
         </div>
 
@@ -170,122 +144,140 @@
         <div class="model-box">
           <div class="model-header">
             <span class="model-name">Decision Tree Classifier</span>
-            <i class="fas fa-check-circle check-icon"></i>
           </div>
-          <div class="accuracy-score">
-            {{ "%.2f"|format(dt_accuracy * 100) }}%
+          <div class="accuracy-score">{{ "%.2f"|format(metrics.dt.accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+
+        <!-- Sklearn Logistic -->
+        <div class="model-box">
+          <div class="model-header">
+            <span class="model-name">Sklearn Logistic Regression</span>
           </div>
+          <div class="accuracy-score">{{ "%.2f"|format(metrics.lr_sklearn.accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+
+        <!-- Custom Logistic -->
+        <div class="model-box">
+          <div class="model-header">
+            <span class="model-name">Custom Logistic Regression</span>
+          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(metrics.lr_manual.accuracy * 100) }}%</div>
           <div class="accuracy-label">Accuracy Score</div>
         </div>
       </div>
     </div>
-  </main>
-</div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Chart Config
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = "#A3AED0";
 
-<script>
-  // Global Chart
-  Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-  Chart.defaults.color = "#A3AED0";
-
-  // Bar Chart
-  const barCtx = document.getElementById("barChart").getContext("2d");
-  new Chart(barCtx, {
-    type: "bar",
-    data: {
-      labels: ["LR (Manual)", "Random Forest", "LR (Sklearn)", "Decision Tree"],
-      datasets: [
-        {
-          label: "Accuracy (%)",
-          data: [
-            parseFloat("{{ '%.2f'|format(lr_manual_accuracy * 100) }}"),
-            parseFloat("{{ '%.2f'|format(rf_accuracy * 100) }}"),
-            parseFloat("{{ '%.2f'|format(lr_sklearn_accuracy * 100) }}"),
-            parseFloat("{{ '%.2f'|format(dt_accuracy * 100) }}"),
-          ],
-          backgroundColor: "#4f46e5",
-          borderRadius: 8,
-          barThickness: 32,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "#1e293b",
-          padding: 12,
-          cornerRadius: 8,
-          callbacks: {
-            label: function (context) {
-              return (
-                context.dataset.label + ": " + context.parsed.y.toFixed(2) + "%"
-              );
+        // Bar Chart
+        const barCtx = document.getElementById("barChart").getContext("2d");
+        if (barCtx) {
+          new Chart(barCtx, {
+            type: "bar",
+            data: {
+              labels: ["Random Forest", "Decision Tree", "Sklearn Logistic", "Custom LR"],
+              datasets: [
+                {
+                  label: "Accuracy (%)",
+                  data: [
+                    parseFloat("{{ '%.2f'|format(metrics.rf.accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(metrics.dt.accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(metrics.lr_sklearn.accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(metrics.lr_manual.accuracy * 100) }}"),
+                  ],
+                  backgroundColor: "#4f46e5",
+                  borderRadius: 8,
+                  barThickness: 32,
+                },
+              ],
             },
-          },
-        },
-      },
-      scales: {
-        y: {
-          beginAtZero: false,
-          min: 60,
-          max: 95,
-          grid: { color: "#f1f5f9", drawBorder: false },
-          ticks: {
-            stepSize: 5,
-            callback: function (value) {
-              return value.toFixed(2) + "%";
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: "#1e293b",
+                  padding: 12,
+                  cornerRadius: 8,
+                  callbacks: {
+                    label: function (context) {
+                      return (
+                        context.dataset.label + ": " + context.parsed.y.toFixed(2) + "%"
+                      );
+                    },
+                  },
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  min: 60,
+                  max: 95,
+                  grid: { color: "#f1f5f9", drawBorder: false },
+                  ticks: {
+                    stepSize: 5,
+                    callback: function (value) {
+                      return value.toFixed(2) + "%";
+                    },
+                  },
+                },
+                x: {
+                  grid: { display: false, drawBorder: false },
+                },
+              },
             },
-          },
-        },
-        x: {
-          grid: { display: false, drawBorder: false },
-        },
-      },
-    },
-  });
+          });
+        }
 
-  // Pie Chart
-  const pieCtx = document.getElementById("pieChart").getContext("2d");
-  new Chart(pieCtx, {
-    type: "pie",
-    data: {
-      labels: [
-        "Non-Default (" + "{{ not_default_percent }}" + "%)",
-        "Default (" + "{{ default_percent }}" + "%)",
-      ],
-      datasets: [
-        {
-          data: [
-            parseFloat("{{ not_default_percent }}"),
-            parseFloat("{{ default_percent }}"),
-          ],
-          backgroundColor: ["#10b981", "#ef4444"],
-          borderWidth: 0,
-          hoverOffset: 10,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            usePointStyle: true,
-            padding: 25,
-            font: { size: 12, weight: "500" },
-          },
-        },
-        tooltip: {
-          backgroundColor: "#1e293b",
-          padding: 12,
-          cornerRadius: 8,
-        },
-      },
-    },
-  });
-</script>
-{% endblock %}
+        // Pie Chart
+        const pieCtx = document.getElementById("pieChart").getContext("2d");
+        if (pieCtx) {
+          new Chart(pieCtx, {
+            type: "pie",
+            data: {
+              labels: [
+                "Non-Default ({{ not_default_percent }}%)",
+                "Default ({{ default_percent }}%)",
+              ],
+              datasets: [
+                {
+                  data: [
+                    parseFloat("{{ not_default_percent }}"),
+                    parseFloat("{{ default_percent }}"),
+                  ],
+                  backgroundColor: ["#10b981", "#ef4444"],
+                  borderWidth: 0,
+                  hoverOffset: 10,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    usePointStyle: true,
+                    padding: 25,
+                    font: { size: 12, weight: "500" },
+                  },
+                },
+                tooltip: {
+                  backgroundColor: "#1e293b",
+                  padding: 12,
+                  cornerRadius: 8,
+                },
+              },
+            },
+          });
+        }
+      });
+    </script>
+    {% endblock %}

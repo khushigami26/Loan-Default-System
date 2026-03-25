@@ -28,7 +28,7 @@ def create_app():
     #  protection
     CSRFProtect(app)
 
-    @app.route("/health")  # API to check if app is running
+    @app.route("/health") 
     def health():
         return {"status": "healthy", "mongodb": "checking..."}, 200
 
@@ -45,6 +45,8 @@ def create_app():
             serverSelectionTimeoutMS=5000,
             uuidRepresentation='standard'
         )
+        from models import PredictionHistory
+        PredictionHistory.ensure_indexes()
     except Exception as e:
         print(f"MongoDB connection failed: {e}")
 
@@ -59,20 +61,48 @@ def create_app():
         except Exception:
             return None
 
-    # Load  Model
-    MODEL_PATH = os.path.join(
-        os.path.dirname(__file__), "model", "loan_default_model.pkl"
-    )
+    # Load Models
+    MODEL_DIR = os.path.join(os.path.dirname(__file__), "model")
+    
+    import joblib
+    app.ml_models = {}
+    
+    # Model Map
+    model_files = {
+        "rf": "rf_model.pkl",
+        "dt": "dt_model.pkl",
+        "lr_sklearn": "lr_sklearn_model.pkl",
+        "lr_manual": "lr_manual_model.pkl",
+    }
+
     try:
-        if os.path.exists(MODEL_PATH):
-            with open(MODEL_PATH, "rb") as file:
-                app.ml_model = pickle.load(file)
+
+        # Load specific model files
+        for model_id, filename in model_files.items():
+            path = os.path.join(MODEL_DIR, filename)
+            if os.path.exists(path):
+                app.ml_models[model_id] = joblib.load(path)
+                print(f"Model {model_id} loaded from {filename}")
+        
+        # Fallback for loan_model.pkl
+        main_path = os.path.join(MODEL_DIR, "loan_model.pkl")
+        if os.path.exists(main_path):
+            main_model = joblib.load(main_path)
+            app.ml_model = main_model
+            # If specific models weren't loaded, use this as a global fallback
+            if not app.ml_models:
+                app.ml_models["rf"] = main_model
+                print("Using loan_model.pkl as default 'rf' model.")
         else:
             app.ml_model = None
-            print(f"Model file not found at {MODEL_PATH}!")
+            if not app.ml_models:
+                print("CRITICAL: No model files found!")
+            
     except Exception as e:
-        app.ml_model = None
-        print(f"Error loading model: {e}")
+        app.ml_models = {}
+        print(f"Error loading models: {e}")
+        import traceback
+        traceback.print_exc()
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)

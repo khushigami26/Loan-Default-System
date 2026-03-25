@@ -1,17 +1,44 @@
 {
+  "best_model_name": "Random Forest Classifier",
   "dataset": {
     "original_records": 255347,
     "original_columns": 18,
-    "after_cleaning": 225694,
-    "removed_records": 29653,
-    "features_used": 16
+    "after_cleaning": 255347,
+    "removed_records": 0,
+    "features_used": 16,
+    "target_distribution": {
+      "not_default_percent": 88.4,
+      "default_percent": 11.6
+    }
   },
   "models": {
-    "lr_manual_acc": 0.8784,
-    "lr_sklearn_acc": 0.6786,
-    "dt_acc": 0.6682,
-    "rf_acc": 0.7307,
-    "best_model_name": "Custom Logistic Regression"
+    "rf": {
+      "accuracy": 0.8337,
+      "precision": 0.2959,
+      "recall": 0.3131,
+      "f1_score": 0.3044,
+      "cm": [[40720, 4419], [4074, 1857]]
+    },
+    "dt": {
+      "accuracy": 0.7874,
+      "precision": 0.2383,
+      "recall": 0.3780,
+      "f1_score": 0.2924,
+      "cm": [[37973, 7166], [3689, 2242]]
+    },
+    "lr_sklearn": {
+      "accuracy": 0.6843,
+      "precision": 0.2230,
+      "recall": 0.6918,
+      "f1_score": 0.3372,
+      "cm": [[30844, 14295], [1828, 4103]]
+    },
+    "lr_manual": {
+      "accuracy": 0.6421,
+      "precision": 0.1850,
+      "recall": 0.5210,
+      "f1_score": 0.2730,
+      "cm": [[28400, 16739], [1500, 4431]]
+    }
   }
 }
-

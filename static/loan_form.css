@@ -199,6 +199,11 @@
   border: 1px solid var(--border-color);
 }
 
+.card {
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
 /* Loading Overlay */
 .loading-overlay {
   position: fixed;

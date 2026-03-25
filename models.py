@@ -17,14 +17,14 @@ class PredictionHistory(Document):
     model_used = StringField(max_length=50, required=True)
     prediction = StringField(max_length=50, required=True)
 
-    #  fields
+
     credit_score = FloatField()
     interest_rate = FloatField()
     loan_term = FloatField()
     age = FloatField()
     dti_ratio = FloatField()
 
-    date = DateTimeField(default=datetime.utcnow)
+    date = DateTimeField(default=datetime.utcnow, expire_after_seconds=172800)
 
     meta = {
         "indexes": [

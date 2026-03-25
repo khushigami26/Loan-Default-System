@@ -8,7 +8,6 @@
 <div class="app-container">
   {% include 'sidebar.html' %}
 
-  <!-- Centered Processing Overlay -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="loader-content">
       <div class="spinner-circle"></div>
@@ -31,7 +30,7 @@
     <form method="POST">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-      <!--  Model & Strategy Selection -->
+      <!--  Model Selection -->
       <div class="card model-selector-card">
         <div class="section-header" style="border: none; margin-bottom: 1rem;">
           <i class="fas fa-microchip"></i>
@@ -40,15 +39,19 @@
         <div class="form-group" style="max-width: 500px;">
           <label for="model_type">Select Algorithm</label>
           <select id="model_type" name="model_type" class="form-control">
-            <option value="lr_manual" selected>Custom Logistic Regression ({{ "%.2f"|format(lr_manual_accuracy * 100) }}%)</option>
-            <option value="rf">Random Forest Classifier ({{ "%.2f"|format(rf_accuracy * 100) }}%)</option>
-            <option value="lr_sklearn">Sklearn Logistic Regression ({{ "%.2f"|format(lr_sklearn_accuracy * 100) }}%)</option>
-            <option value="dt">Decision Tree Classifier ({{ "%.2f"|format(dt_accuracy * 100) }}%)</option>
+            <option value="rf" {% if best_id == 'rf' %}selected{% endif %}>Random Forest - {{
+              "%.2f"|format(metrics.rf.accuracy * 100) }}% Accuracy</option>
+            <option value="dt" {% if best_id == 'dt' %}selected{% endif %}>Decision Tree - {{
+              "%.2f"|format(metrics.dt.accuracy * 100) }}% Accuracy</option>
+            <option value="lr_sklearn" {% if best_id == 'lr_sklearn' %}selected{% endif %}>Sklearn LR - {{
+              "%.2f"|format(metrics.lr_sklearn.accuracy * 100) }}% Accuracy</option>
+            <option value="lr_manual" {% if best_id == 'lr_manual' %}selected{% endif %}>Custom LR - {{
+              "%.2f"|format(metrics.lr_manual.accuracy * 100) }}% Accuracy</option>
           </select>
         </div>
       </div>
 
-      <!-- Applicant Financial Profile -->
+      <!-- Financial Profile -->
       <div class="card">
         <div class="section-header">
           <i class="fas fa-user-tie"></i>

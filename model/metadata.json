@@ -3,8 +3,8 @@
   "dataset": {
     "original_records": 255347,
     "original_columns": 18,
-    "after_cleaning": 255347,
-    "removed_records": 0,
+    "after_cleaning": 225694,
+    "removed_records": 29653,
     "features_used": 16,
     "target_distribution": {
       "not_default_percent": 88.4,

@@ -575,7 +575,7 @@ body {
   background-color: var(--card-bg);
   padding: 1.5rem;
   border-radius: 12px;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   height: auto;
@@ -624,6 +624,11 @@ body {
 .model-box.best {
   background-color: #f0fdfa;
   border: 1px solid #10b981;
+}
+
+.dark-theme .model-box.best {
+  background-color: var(--success-bg);
+  border-color: var(--success-text);
 }
 
 .model-box .check-icon {

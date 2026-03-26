@@ -75,34 +75,35 @@ def create_app():
         "lr_manual": "lr_manual_model.pkl",
     }
 
-    try:
-
-        # Load specific model files
-        for model_id, filename in model_files.items():
-            path = os.path.join(MODEL_DIR, filename)
-            if os.path.exists(path):
+    # Load specific model files with individual error handling for better resilience on Render
+    for model_id, filename in model_files.items():
+        path = os.path.join(MODEL_DIR, filename)
+        if os.path.exists(path):
+            try:
                 app.ml_models[model_id] = joblib.load(path)
-                print(f"Model {model_id} loaded from {filename}")
-        
-        # Fallback for loan_model.pkl
-        main_path = os.path.join(MODEL_DIR, "loan_model.pkl")
-        if os.path.exists(main_path):
+                print(f"Model {model_id} successfully loaded from {filename}")
+            except Exception as e:
+                print(f"CRITICAL: Failed to load {model_id} from {filename}: {e}")
+    
+    # Check if we have at least one valid model
+    if not app.ml_models:
+        print("CRITICAL NOTIFICATION: No models were successfully loaded into memory!")
+    
+    # Fallback for loan_model.pkl (Absolute Legacy/Local Fallback)
+    main_path = os.path.join(MODEL_DIR, "loan_model.pkl")
+    if os.path.exists(main_path):
+        try:
             main_model = joblib.load(main_path)
             app.ml_model = main_model
-            # If specific models weren't loaded, use this as a global fallback
             if not app.ml_models:
                 app.ml_models["rf"] = main_model
-                print("Using loan_model.pkl as default 'rf' model.")
-        else:
+                print("Using legacy loan_model.pkl as primary fallback.")
+        except Exception:
             app.ml_model = None
-            if not app.ml_models:
-                print("CRITICAL: No model files found!")
-            
-    except Exception as e:
-        app.ml_models = {}
-        print(f"Error loading models: {e}")
-        import traceback
-        traceback.print_exc()
+    else:
+        app.ml_model = None
+
+    print(f"Active Prediction Engines: {list(app.ml_models.keys())}")
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)

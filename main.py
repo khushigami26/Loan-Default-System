@@ -259,7 +259,7 @@ def loan():
                         prediction_proba = 0.5
             
            
-            BANK_THRESHOLD = 0.50
+            BANK_THRESHOLD = 0.52
             
             is_default = (prediction_proba > BANK_THRESHOLD)
             
@@ -267,33 +267,53 @@ def loan():
             income_val = float(request.form.get("Income", 0))
             credit_val = float(request.form.get("CreditScore", 0))
             dti_val = float(request.form.get("DTIRatio", 0))
-            if income_val >= 1500000 and credit_val >= 680:
+
+            # Normalize DTI if entered as a percentage
+            if dti_val > 1.0:
+                dti_val = dti_val / 100.0
+
+            # 1. Automatic Approval (Financial Strength Policy)
+            # Aligning with "Healthy" DTI benchmarks (< 36%)
+            is_home_loan = (purpose == "Home")
+            lti_ratio = (loan_val / income_val) if income_val > 0 else 99
+            
+            if dti_val <= 0.36 and credit_val >= 600 and lti_ratio < (5.0 if is_home_loan else 2.5):
+                is_default = False
+            elif income_val >= 1000000 and credit_val >= 650 and dti_val < 0.40:
                 is_default = False
             
-            if income_val > 0 and (loan_val / income_val) > 15:
-                is_default = True
-            
+            # 2. Hard Policy Decliners (Risk Benchmarks)
+            # High Risk DTI > 50%
             if dti_val > 0.55:
                 is_default = True
             
-            if income_val < 95000:
+            # Loan-to-Income Multiplier (Industry standards: 2x personal, 5x home)
+            if is_home_loan:
+                if lti_ratio > 6.0: is_default = True
+            else:
+                if lti_ratio > 3.5: is_default = True
+            
+            if income_val < 85000: # Below subsistence level for lending
                 is_default = True
             
-            if credit_val < 520:
+            if credit_val < 450: # Extreme risk
                 is_default = True
                 
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"
             
          
+            # Calibrate UI Probability (Avoid extreme jumps for marginal cases)
             credit_offset = (850 - credit_val) / 850 * 0.15 
-            jitter = random.uniform(-0.05, 0.05)
+            jitter = random.uniform(-0.03, 0.03)
             
             if not is_default:
-                prediction_proba = (prediction_proba * 0.1) + 0.15 + credit_offset + jitter
-                prediction_proba = max(0.08, min(prediction_proba, 0.49))
+                # For approved cases, keep prob more centered and influenced by credit
+                prediction_proba = (prediction_proba * 0.3) + 0.12 + credit_offset + jitter
+                prediction_proba = max(0.08, min(prediction_proba, 0.48))
             else:
-                prediction_proba = (prediction_proba * 0.5) + 0.40 + credit_offset + jitter
-                prediction_proba = max(0.51, min(prediction_proba, 0.998))
+                # For default cases, keep it realistic but clearly risk-aligned
+                prediction_proba = (prediction_proba * 0.45) + 0.38 + credit_offset + jitter
+                prediction_proba = max(0.52, min(prediction_proba, 0.998))
             
             history = PredictionHistory(
                 user_id=current_user.pk,

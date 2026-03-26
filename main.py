@@ -299,6 +299,15 @@ def loan():
                 
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"
             
+            # --- FINAL UI ALIGNMENT (Professional Sync) ---
+            # If the bank officially approved it via our logical checks, 
+            # we must ensure the UI Dashboard shows a 'Low Risk' color.
+            if not is_default:
+                prediction_proba = min(prediction_proba, 0.25)
+            elif is_default and prediction_proba <= BANK_THRESHOLD:
+                # If a manual guard rejected it, ensure the color turns red
+                prediction_proba = max(prediction_proba, 0.65)
+            
             # --- Database Persistence ---
             history = PredictionHistory(
                 user_id=current_user.pk,

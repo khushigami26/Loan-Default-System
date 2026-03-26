@@ -61,55 +61,61 @@ def create_app():
         except Exception:
             return None
 
-    # Load Models
     MODEL_DIR = os.path.join(os.path.dirname(__file__), "model")
-    
     import joblib
-    app.ml_models = {}
     
-    # Model Map
-    model_files = {
-        "rf": "rf_model.pkl",
-        "dt": "dt_model.pkl",
-        "lr_sklearn": "lr_sklearn_model.pkl",
-        "lr_manual": "lr_manual_model.pkl",
-    }
+    app.ml_models = {}
+    app.ml_model = None
+    app.scaler = None
 
-    for model_id, filename in model_files.items():
+    def get_ml_model(model_name):
+        """Loads and returns a model on demand."""
+        if model_name in app.ml_models and app.ml_models[model_name] is not None:
+            return app.ml_models[model_name]
+        
+        # Simple mapping
+        mapping = {
+            "rf": "rf_model.pkl",
+            "dt": "dt_model.pkl",
+            "lr_sklearn": "lr_sklearn_model.pkl",
+            "lr_manual": "lr_manual_model.pkl",
+        }
+        
+        filename = mapping.get(model_name)
+        if not filename:
+            return None
+            
         path = os.path.join(MODEL_DIR, filename)
         if os.path.exists(path):
             try:
-                app.ml_models[model_id] = joblib.load(path)
-                print(f"Model {model_id} successfully loaded from {filename}")
+                print(f"Loading Model {model_name} on-demand...")
+                loaded = joblib.load(path)
+                app.ml_models[model_name] = loaded
+                return loaded
             except Exception as e:
-                print(f"CRITICAL: Failed to load {model_id} from {filename}: {e}")
-    
-    if not app.ml_models:
-        print("CRITICAL NOTIFICATION: No models were successfully loaded into memory!")
-    
-    main_path = os.path.join(MODEL_DIR, "loan_model.pkl")
-    if os.path.exists(main_path):
-        try:
-            main_model = joblib.load(main_path)
-            app.ml_model = main_model
-            if not app.ml_models:
-                app.ml_models["rf"] = main_model
-                print("Using legacy loan_model.pkl as primary fallback.")
-        except Exception:
-            app.ml_model = None
-    scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
-    if os.path.exists(scaler_path):
-        try:
-            app.scaler = joblib.load(scaler_path)
-            print("StandardScaler loaded successfully.")
-        except Exception as e:
-            print(f"Error loading scaler: {e}")
-            app.scaler = None
-    else:
-        print("CRITICAL: scaler.pkl not found!")
-        app.scaler = None
+                print(f"Error loading {model_name}: {e}")
+        return None
 
-    print(f"Active Prediction Engines: {list(app.ml_models.keys())}")
+    def get_scaler():
+        """Loads and returns the scaler on demand."""
+        if app.scaler is not None:
+            return app.scaler
+        path = os.path.join(MODEL_DIR, "scaler.pkl")
+        if os.path.exists(path):
+            try:
+                print("Loading StandardScaler on-demand...")
+                app.scaler = joblib.load(path)
+                return app.scaler
+            except Exception as e:
+                print(f"Error loading scaler: {e}")
+        return None
+
+    app.get_ml_model = get_ml_model
+    app.get_scaler = get_scaler
+    
+    app.available_engines = ["rf", "dt", "lr_sklearn", "lr_manual"]
+    
+    print(f"Server initialized. Available engines (unloaded): {app.available_engines}")
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(main_blueprint)

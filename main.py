@@ -133,9 +133,9 @@ def loan_default_feature_insights():
 @main.route("/loan", methods=["GET", "POST"])
 @login_required
 def loan():
-    models = getattr(current_app, 'ml_models', {})
-    if not models:
-        return "Model not loaded. Check model file."
+    engines = getattr(current_app, 'available_engines', [])
+    if not engines:
+        return "Prediction engines configuration missing. Check app initialization.", 500
 
     metadata = _load_metadata()
     models_metadata = metadata.get("models", {})
@@ -225,12 +225,10 @@ def loan():
             
             features_df = pd.DataFrame([ordered_values], columns=feature_names)
             
-            chosen_engine = current_app.ml_models.get(model_type)
-            if not chosen_engine:
-                chosen_engine = getattr(current_app, "ml_model", None)
+            chosen_engine = current_app.get_ml_model(model_type)
             
             if not chosen_engine:
-                flash("Selected prediction engine not initialized on server.", "error")
+                flash(f"Prediction engine '{model_name}' is currently unavailable. Please try again later.", "error")
                 return render_template("loan_form.html", **context)
                 
             # Perform Prediction
@@ -238,7 +236,12 @@ def loan():
                 weights = chosen_engine.get('weights')
                 bias = chosen_engine.get('bias')
                 
-                features_scaled = current_app.scaler.transform(features_df)
+                scaler = current_app.get_scaler()
+                if not scaler:
+                    flash("Calculation engine (scaler) missing. Cannot perform manual inference.", "error")
+                    return render_template("loan_form.html", **context)
+                
+                features_scaled = scaler.transform(features_df)
                 
                 z = np.dot(features_scaled, weights) + bias
                 

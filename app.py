@@ -100,8 +100,18 @@ def create_app():
                 print("Using legacy loan_model.pkl as primary fallback.")
         except Exception:
             app.ml_model = None
+    # Load Scaler (Required for Manual Model Inference)
+    scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
+    if os.path.exists(scaler_path):
+        try:
+            app.scaler = joblib.load(scaler_path)
+            print("StandardScaler loaded successfully.")
+        except Exception as e:
+            print(f"Error loading scaler: {e}")
+            app.scaler = None
     else:
-        app.ml_model = None
+        print("CRITICAL: scaler.pkl not found!")
+        app.scaler = None
 
     print(f"Active Prediction Engines: {list(app.ml_models.keys())}")
 

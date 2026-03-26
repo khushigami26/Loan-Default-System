@@ -140,26 +140,39 @@
           {% endif %}
         </div>
 
-        {# DTI Ratio Segment #}
+        {# DTI Ratio Segment (Axis Bank Standards) #}
         <div class="insight-item">
           {% set dti = features.get('DTIRatio', 0) %}
-          {% if dti <= 0.3 %}
+          {% set dti_p = (dti * 100) %}
+          {% if dti_p < 20 %}
+            <div class="insight-icon positive"><i class="fas fa-check-double"></i></div>
+            <div class="insight-content">
+              <h4>Excellent DTI Ratio</h4>
+              <p>Debt-to-Income ratio of <b>{{ dti_p|round(1) }}%</b> indicates a superior financial position.</p>
+            </div>
+          {% elif dti_p <= 35 %}
             <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
             <div class="insight-content">
-              <h4>Favorable DTI Ratio</h4>
-              <p>Debt-to-Income ratio of <b>{{ (dti*100)|round(1) }}%</b> is well within the healthy range.</p>
+              <h4>Good DTI Ratio</h4>
+              <p>DTI of <b>{{ dti_p|round(1) }}%</b> is within the manageable debt range for most lenders.</p>
             </div>
-          {% elif dti <= 0.5 %}
+          {% elif dti_p <= 43 %}
             <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
             <div class="insight-content">
               <h4>Moderate DTI Ratio</h4>
-              <p>DTI of <b>{{ (dti*100)|round(1) }}%</b> suggests a higher portion of income goes to existing debt.</p>
+              <p>DTI of <b>{{ dti_p|round(1) }}%</b> is acceptable but indicates a slightly elevated debt load.</p>
             </div>
-          {% else %}
-            <div class="insight-icon negative"><i class="fas fa-exclamation-circle"></i></div>
+          {% elif dti_p <= 50 %}
+            <div class="insight-icon negative"><i class="fas fa-exclamation-triangle"></i></div>
             <div class="insight-content">
               <h4>High Debt Exposure</h4>
-              <p>DTI of <b>{{ (dti*100)|round(1) }}%</b> is very high, significantly increasing default probability.</p>
+              <p>DTI of <b>{{ dti_p|round(1) }}%</b> may make obtaining standard loan rates more difficult.</p>
+            </div>
+          {% else %}
+            <div class="insight-icon negative"><i class="fas fa-user-slash"></i></div>
+            <div class="insight-content">
+              <h4>Critical Over-Leverage</h4>
+              <p>DTI of <b>{{ dti_p|round(1) }}%</b> indicates potential over-leverage and high default risk.</p>
             </div>
           {% endif %}
         </div>

@@ -269,26 +269,31 @@ def loan():
                         prediction_proba = 0.5
             
             # --- Hybrid Assessment: Model Probability + Financial Sanity Guards ---
-            # Calibrated to 0.42 to balance safety vs approvals for strong profiles
-            BANK_THRESHOLD = 0.42
+            # Calibrated to 0.50 for the high-accuracy custom model
+            BANK_THRESHOLD = 0.50
             
             # Start with ML Probability
             is_default = (prediction_proba > BANK_THRESHOLD)
             
-            # --- Sanity Guards (Financial Red Flags) ---
-            loan_val = features_dict.get("LoanAmount", 0)
-            income_val = features_dict.get("Income", 0)
-            credit_val = features_dict.get("CreditScore", 0)
+            # --- Sanity Guards & Affluence Overrides ---
+            loan_val = float(request.form.get("LoanAmount", 0))
+            income_val = float(request.form.get("Income", 0))
+            credit_val = float(request.form.get("CreditScore", 0))
             
-            # 1. Loan-to-Income Rule (Reject if loan exceeds 20x annual income)
+            # 1. Professional Override: High-Net-Worth Individuals (Strong stability)
+            # If income is > 1M and they have Fair-to-Good credit, we override ML skepticism
+            if income_val >= 1000000 and credit_val >= 550:
+                is_default = False
+            
+            # 2. Strict Loan-to-Income Rule (Still reject if loan is > 20x annual income)
             if income_val > 0 and (loan_val / income_val) > 20:
                 is_default = True
             
-            # 2. Critical Poverty Rule (Manual check for non-viable income)
+            # 3. Critical Poverty Rule (Manual check for non-viable income < 35k)
             if income_val < 35000:
                 is_default = True
                 
-            # 3. Hard Credit Floor
+            # 4. Hard Credit Floor (Reject under 420 regardless of income)
             if credit_val < 420:
                 is_default = True
                 

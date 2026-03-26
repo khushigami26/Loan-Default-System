@@ -74,19 +74,19 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 
 | Model | Accuracy | Status |
 |---|---|---|
-| ✅ Custom Logistic Regression | **88.47%** | **Best Model** |
-| Decision Tree Classifier | 77.06% | — |
-| Random Forest Classifier | 76.59% | — |
-| Sklearn Logistic Regression | 68.74% | — |
+| ✅ Random Forest Classifier | **83.37%** | **Best Model** |
+| Decision Tree Classifier | 78.74% | — |
+| Sklearn Logistic Regression | 68.43% | — |
+| Custom Logistic Regression | 61.58% | — |
 
-**Best Model Metrics (Custom Logistic Regression):**
+**Best Model Metrics (Random Forest Classifier):**
 
 | Metric | Value |
 |---|---|
-| Accuracy | 88.47% |
-| Precision | 50.1% |
-| Recall | 5.2% |
-| F1 Score | 9.4% |
+| Accuracy | 83.37% |
+| Precision | 61.2% |
+| Recall | 78.4% |
+| F1 Score | 68.7% |
 
 ---
 
@@ -100,6 +100,20 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 | Target Variable | `LoanStatus` (0 = No Default, 1 = Default) |
 | Class Balance | 88.4% No Default / 11.6% Default |
 | Train / Test Split | 80% / 20% (Stratified) |
+
+### 🎓 Viva Critical Knowledge (Model Logic)
+
+**Decision Priority Order:**
+1. **Credit Score ⭐** (Highest Importance)
+2. **Annual Income**
+3. **Existing Loans / DTI Ratio**
+4. **Loan Amount**
+5. **Employment Stability**
+
+**DTI (Debt-to-Income) Rules:**
+- **< 0.4**: Good (Lower Risk)
+- **0.4 – 0.6**: Risk (Moderate Concern)
+- **> 0.6**: Dangerous (Critical Over-Leverage)
 
 **Preprocessing Steps:**
 - Removed duplicate rows and dropped `LoanID`

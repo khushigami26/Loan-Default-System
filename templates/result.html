@@ -84,35 +84,37 @@
         <div class="insight-item">
           {% set cs = features.get('CreditScore', 0) %}
           {% if cs >= 800 %}
-            <div class="insight-icon positive"><i class="fas fa-certificate"></i></div>
-            <div class="insight-content">
-              <h4>Exceptional Credit Score</h4>
-              <p>Your score of <b>{{ cs|int }}</b> is in the highest bracket, indicating superior financial reliability.</p>
-            </div>
+          <div class="insight-icon positive"><i class="fas fa-certificate"></i></div>
+          <div class="insight-content">
+            <h4>Exceptional Credit Score</h4>
+            <p>Your score of <b>{{ cs|int }}</b> is in the highest bracket, indicating superior financial reliability.
+            </p>
+          </div>
           {% elif cs >= 740 %}
-            <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
-            <div class="insight-content">
-              <h4>Very Good Credit Score</h4>
-              <p>A score of <b>{{ cs|int }}</b> is significantly above the average, demonstrating high stability.</p>
-            </div>
+          <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
+          <div class="insight-content">
+            <h4>Very Good Credit Score</h4>
+            <p>A score of <b>{{ cs|int }}</b> is significantly above the average, demonstrating high stability.</p>
+          </div>
           {% elif cs >= 670 %}
-            <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
-            <div class="insight-content">
-              <h4>Good Credit Score</h4>
-              <p>Your score of <b>{{ cs|int }}</b> is considered solid and safe for long-term credit products.</p>
-            </div>
+          <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
+          <div class="insight-content">
+            <h4>Good Credit Score</h4>
+            <p>Your score of <b>{{ cs|int }}</b> is considered solid and safe for long-term credit products.</p>
+          </div>
           {% elif cs >= 580 %}
-            <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
-            <div class="insight-content">
-              <h4>Fair Credit Score</h4>
-              <p>A score of <b>{{ cs|int }}</b> is acceptable but suggests some historical variability in payments.</p>
-            </div>
+          <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
+          <div class="insight-content">
+            <h4>Fair Credit Score</h4>
+            <p>A score of <b>{{ cs|int }}</b> is acceptable but suggests some historical variability in payments.</p>
+          </div>
           {% else %}
-            <div class="insight-icon negative"><i class="fas fa-exclamation-circle"></i></div>
-            <div class="insight-content">
-              <h4>Poor Credit Score</h4>
-              <p>Score of <b>{{ cs|int }}</b> is below the 580 threshold, which may present obstacles in obtaining standard credit rates.</p>
-            </div>
+          <div class="insight-icon negative"><i class="fas fa-exclamation-circle"></i></div>
+          <div class="insight-content">
+            <h4>Poor Credit Score</h4>
+            <p>Score of <b>{{ cs|int }}</b> is below the 580 threshold, which may present obstacles in obtaining
+              standard credit rates.</p>
+          </div>
           {% endif %}
         </div>
 
@@ -120,23 +122,26 @@
         <div class="insight-item">
           {% set inc = features.get('Income', 0) %}
           {% if inc >= 500000 %}
-            <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
-            <div class="insight-content">
-              <h4>Robust Annual Income</h4>
-              <p>Annual income of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> provides a substantial safety net for repayment.</p>
-            </div>
+          <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
+          <div class="insight-content">
+            <h4>Robust Annual Income</h4>
+            <p>Annual income of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> provides a substantial safety net for
+              repayment.</p>
+          </div>
           {% elif inc >= 200000 %}
-            <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
-            <div class="insight-content">
-              <h4>Moderate Annual Income</h4>
-              <p>Annual income of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> meets standard requirements but has limited buffer.</p>
-            </div>
+          <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
+          <div class="insight-content">
+            <h4>Moderate Annual Income</h4>
+            <p>Annual income of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> meets standard requirements but has limited
+              buffer.</p>
+          </div>
           {% else %}
-            <div class="insight-icon negative"><i class="fas fa-exclamation-circle"></i></div>
-            <div class="insight-content">
-              <h4>Limited Annual Income</h4>
-              <p>Income level of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> indicates high sensitivity to financial shocks.</p>
-            </div>
+          <div class="insight-icon negative"><i class="fas fa-exclamation-circle"></i></div>
+          <div class="insight-content">
+            <h4>Limited Annual Income</h4>
+            <p>Income level of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> indicates high sensitivity to financial
+              shocks.</p>
+          </div>
           {% endif %}
         </div>
 
@@ -144,79 +149,78 @@
         <div class="insight-item">
           {% set dti = features.get('DTIRatio', 0) %}
           {% set dti_p = (dti * 100) %}
-          {% if dti_p < 20 %}
-            <div class="insight-icon positive"><i class="fas fa-check-double"></i></div>
-            <div class="insight-content">
-              <h4>Excellent DTI Ratio</h4>
-              <p>Debt-to-Income ratio of <b>{{ dti_p|round(1) }}%</b> indicates a superior financial position.</p>
-            </div>
-          {% elif dti_p <= 35 %}
-            <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
-            <div class="insight-content">
-              <h4>Good DTI Ratio</h4>
-              <p>DTI of <b>{{ dti_p|round(1) }}%</b> is within the manageable debt range for most lenders.</p>
-            </div>
-          {% elif dti_p <= 43 %}
-            <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
-            <div class="insight-content">
-              <h4>Moderate DTI Ratio</h4>
-              <p>DTI of <b>{{ dti_p|round(1) }}%</b> is acceptable but indicates a slightly elevated debt load.</p>
-            </div>
-          {% elif dti_p <= 50 %}
-            <div class="insight-icon negative"><i class="fas fa-exclamation-triangle"></i></div>
-            <div class="insight-content">
-              <h4>High Debt Exposure</h4>
-              <p>DTI of <b>{{ dti_p|round(1) }}%</b> may make obtaining standard loan rates more difficult.</p>
-            </div>
-          {% else %}
-            <div class="insight-icon negative"><i class="fas fa-user-slash"></i></div>
-            <div class="insight-content">
-              <h4>Critical Over-Leverage</h4>
-              <p>DTI of <b>{{ dti_p|round(1) }}%</b> indicates potential over-leverage and high default risk.</p>
-            </div>
-          {% endif %}
+          {% if dti_p < 20 %} <div class="insight-icon positive"><i class="fas fa-check-double"></i></div>
+        <div class="insight-content">
+          <h4>Excellent DTI Ratio</h4>
+          <p>Debt-to-Income ratio of <b>{{ dti_p|round(1) }}%</b> indicates a superior financial position.</p>
         </div>
-
-        {# Employment Stability #}
-        <div class="insight-item">
-          {% set months = features.get('MonthsEmployed', 0) %}
-          {% if months >= 60 %}
-            <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
-            <div class="insight-content">
-              <h4>High Career Stability</h4>
-              <p>Over 5 years (<b>{{ months|int }} months</b>) of continuous employment suggests steady income lines.</p>
-            </div>
-          {% elif months >= 24 %}
-            <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
-            <div class="insight-content">
-              <h4>Standard Career Tenure</h4>
-              <p>Employment history of <b>{{ months|int }} months</b> reflects consistent workforce participation.</p>
-            </div>
-          {% else %}
-            <div class="insight-icon negative"><i class="fas fa-clock"></i></div>
-            <div class="insight-content">
-              <h4>Limited Employment History</h4>
-              <p>Only <b>{{ months|int }} months</b> in the current workforce may indicate employment instability.</p>
-            </div>
-          {% endif %}
-        </div>
+        {% elif dti_p <= 35 %} <div class="insight-icon positive"><i class="fas fa-check-circle"></i>
       </div>
-      {% endif %}
-
-    <div class="disclaimer">
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem;">
-        Lending decisions are support-only and depend on human review.
-      </p>
+      <div class="insight-content">
+        <h4>Good DTI Ratio</h4>
+        <p>DTI of <b>{{ dti_p|round(1) }}%</b> is within the manageable debt range for most lenders.</p>
+      </div>
+      {% elif dti_p <= 43 %} <div class="insight-icon neutral"><i class="fas fa-info-circle"></i>
     </div>
-
-    <div class="result-actions">
-      <a href="{{ url_for('main.loan') }}" class="btn btn-primary">
-        <i class="fas fa-redo"></i> New Assessment
-      </a>
-      <button onclick="window.history.back()" class="btn btn-secondary">
-        <i class="fas fa-arrow-left"></i> Back
-      </button>
+    <div class="insight-content">
+      <h4>Moderate DTI Ratio</h4>
+      <p>DTI of <b>{{ dti_p|round(1) }}%</b> is acceptable but indicates a slightly elevated debt load.</p>
     </div>
+    {% elif dti_p <= 50 %} <div class="insight-icon negative"><i class="fas fa-exclamation-triangle"></i>
+</div>
+<div class="insight-content">
+  <h4>High Debt Exposure</h4>
+  <p>DTI of <b>{{ dti_p|round(1) }}%</b> may make obtaining standard loan rates more difficult.</p>
+</div>
+{% else %}
+<div class="insight-icon negative"><i class="fas fa-user-slash"></i></div>
+<div class="insight-content">
+  <h4>Critical Over-Leverage</h4>
+  <p>DTI of <b>{{ dti_p|round(1) }}%</b> indicates potential over-leverage and high default risk.</p>
+</div>
+{% endif %}
+</div>
+
+{# Employment Stability #}
+<div class="insight-item">
+  {% set months = features.get('MonthsEmployed', 0) %}
+  {% if months >= 60 %}
+  <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
+  <div class="insight-content">
+    <h4>High Career Stability</h4>
+    <p>Over 5 years (<b>{{ months|int }} months</b>) of continuous employment suggests steady income lines.</p>
+  </div>
+  {% elif months >= 24 %}
+  <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
+  <div class="insight-content">
+    <h4>Standard Career Tenure</h4>
+    <p>Employment history of <b>{{ months|int }} months</b> reflects consistent workforce participation.</p>
+  </div>
+  {% else %}
+  <div class="insight-icon negative"><i class="fas fa-clock"></i></div>
+  <div class="insight-content">
+    <h4>Limited Employment History</h4>
+    <p>Only <b>{{ months|int }} months</b> in the current workforce may indicate employment instability.</p>
+  </div>
+  {% endif %}
+</div>
+</div>
+{% endif %}
+
+<div class="disclaimer">
+  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem;">
+    Lending decisions are support-only and depend on human review.
+  </p>
+</div>
+
+<div class="result-actions">
+  <a href="{{ url_for('main.loan') }}" class="btn btn-primary">
+    <i class="fas fa-redo"></i> New Assessment
+  </a>
+  <button onclick="window.history.back()" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Back
+  </button>
+</div>
 </div>
 </main>
 </div>

@@ -130,13 +130,13 @@
     <div class="card">
       <h3>Machine Learning Algorithms - Performance Overview</h3>
       <div class="model-grid">
-        <!-- Custom Logistic -->
+        <!-- Random Forest -->
         <div class="model-box best">
           <div class="model-header">
-            <span class="model-name">Custom Logistic Regression</span>
+            <span class="model-name">Random Forest Classifier</span>
             <i class="fas fa-check-circle check-icon"></i>
           </div>
-          <div class="accuracy-score">{{ "%.2f"|format(metrics.lr_manual.accuracy * 100) }}%</div>
+          <div class="accuracy-score">{{ "%.2f"|format(metrics.rf.accuracy * 100) }}%</div>
           <div class="accuracy-label">Accuracy Score</div>
         </div>
 
@@ -149,21 +149,21 @@
           <div class="accuracy-label">Accuracy Score</div>
         </div>
 
-        <!-- Random Forest -->
-        <div class="model-box">
-          <div class="model-header">
-            <span class="model-name">Random Forest Classifier</span>
-          </div>
-          <div class="accuracy-score">{{ "%.2f"|format(metrics.rf.accuracy * 100) }}%</div>
-          <div class="accuracy-label">Accuracy Score</div>
-        </div>
-
         <!-- Sklearn Logistic -->
         <div class="model-box">
           <div class="model-header">
             <span class="model-name">Sklearn Logistic Regression</span>
           </div>
           <div class="accuracy-score">{{ "%.2f"|format(metrics.lr_sklearn.accuracy * 100) }}%</div>
+          <div class="accuracy-label">Accuracy Score</div>
+        </div>
+
+        <!-- Custom Logistic -->
+        <div class="model-box">
+          <div class="model-header">
+            <span class="model-name">Custom Logistic Regression</span>
+          </div>
+          <div class="accuracy-score">{{ "%.2f"|format(metrics.lr_manual.accuracy * 100) }}%</div>
           <div class="accuracy-label">Accuracy Score</div>
         </div>
       </div>
@@ -180,15 +180,15 @@
           new Chart(barCtx, {
             type: "bar",
             data: {
-              labels: ["Custom LR", "Decision Tree", "Random Forest", "Sklearn Logistic"],
+              labels: ["Random Forest", "Decision Tree", "Sklearn Logistic", "Custom LR"],
               datasets: [
                 {
                   label: "Accuracy (%)",
                   data: [
-                    parseFloat("{{ '%.2f'|format(metrics.lr_manual.accuracy * 100) }}"),
-                    parseFloat("{{ '%.2f'|format(metrics.dt.accuracy * 100) }}"),
                     parseFloat("{{ '%.2f'|format(metrics.rf.accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(metrics.dt.accuracy * 100) }}"),
                     parseFloat("{{ '%.2f'|format(metrics.lr_sklearn.accuracy * 100) }}"),
+                    parseFloat("{{ '%.2f'|format(metrics.lr_manual.accuracy * 100) }}"),
                   ],
                   backgroundColor: "#4f46e5",
                   borderRadius: 8,
@@ -217,7 +217,7 @@
               scales: {
                 y: {
                   beginAtZero: false,
-                  min: 60,
+                  min: 50,
                   max: 95,
                   grid: { color: "#f1f5f9", drawBorder: false },
                   ticks: {

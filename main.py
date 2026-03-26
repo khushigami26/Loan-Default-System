@@ -79,8 +79,8 @@ def loan_default_dashboard():
         }
 
     best_model_accuracy = model_metrics.get("rf", {}).get("accuracy", 0.0)
-    if best_model_name == "Custom Logistic Regression":
-        best_model_accuracy = model_metrics.get("lr_manual", {}).get("accuracy", 0.0)
+    if best_model_name == "Random Forest Classifier":
+        best_model_accuracy = model_metrics.get("rf", {}).get("accuracy", 0.0)
 
     return render_template(
         "dashboard.html",
@@ -162,7 +162,7 @@ def loan():
 
     context = {
         "metrics": metrics,
-        "best_id": "lr_manual" if metadata.get("best_model_name", "Custom Logistic Regression") == "Custom Logistic Regression" else "rf"
+        "best_id": "rf" if metadata.get("best_model_name", "Random Forest Classifier") == "Random Forest Classifier" else "lr_manual"
     }
 
     if request.method == "POST":
@@ -266,17 +266,20 @@ def loan():
             loan_val = float(request.form.get("LoanAmount", 0))
             income_val = float(request.form.get("Income", 0))
             credit_val = float(request.form.get("CreditScore", 0))
-          
-            if income_val >= 1000000 and credit_val >= 400:
+            dti_val = float(request.form.get("DTIRatio", 0))
+            if income_val >= 1500000 and credit_val >= 680:
                 is_default = False
             
-            if income_val > 0 and (loan_val / income_val) > 20:
+            if income_val > 0 and (loan_val / income_val) > 15:
                 is_default = True
             
-            if income_val < 35000:
+            if dti_val > 0.55:
                 is_default = True
-                
-            if credit_val < 380:
+            
+            if income_val < 95000:
+                is_default = True
+            
+            if credit_val < 520:
                 is_default = True
                 
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"

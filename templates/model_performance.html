@@ -70,20 +70,20 @@
       <div class="matrix-container" style="margin-bottom: 3rem">
         <!-- Confusion Matrix  -->
         <div class="matrix-box tn">
-          <div class="m-count" id="tn_val">39,000</div>
-          <div class="m-text">True Negative</div>
+          <div class="m-count" id="tn_val">29,377</div>
+          <div class="m-text">True Negative (TN)</div>
         </div>
         <div class="matrix-box fp">
-          <div class="m-count" id="fp_val">6,139</div>
-          <div class="m-text">False Positive</div>
+          <div class="m-count" id="fp_val">5,233</div>
+          <div class="m-text">False Positive (FP)</div>
         </div>
         <div class="matrix-box fn">
-          <div class="m-count" id="fn_val">2,351</div>
-          <div class="m-text">False Negative</div>
+          <div class="m-count" id="fn_val">2,274</div>
+          <div class="m-text">False Negative (FN)</div>
         </div>
         <div class="matrix-box tp">
-          <div class="m-count" id="tp_val">3,580</div>
-          <div class="m-text">True Positive</div>
+          <div class="m-count" id="tp_val">8,255</div>
+          <div class="m-text">True Positive (TP)</div>
         </div>
 
         <div class="matrix-footer-labels">
@@ -136,10 +136,10 @@
       pre: '{{ "%.2f"|format(metrics.rf.precision * 100) }}%',
       rec: '{{ "%.2f"|format(metrics.rf.recall * 100) }}%',
       f1: '{{ "%.2f"|format(metrics.rf.f1 * 100) }}%',
-      tn: "40,720",
-      fp: "4,419",
-      fn: "4,074",
-      tp: "1,857",
+      tn: "29,377",
+      fp: "5,233",
+      fn: "2,274",
+      tp: "8,255",
     },
     dt: {
       name: "Decision Tree Classifier",
@@ -147,10 +147,10 @@
       pre: '{{ "%.2f"|format(metrics.dt.precision * 100) }}%',
       rec: '{{ "%.2f"|format(metrics.dt.recall * 100) }}%',
       f1: '{{ "%.2f"|format(metrics.dt.f1 * 100) }}%',
-      tn: "37,973",
-      fp: "7,166",
-      fn: "3,689",
-      tp: "2,242",
+      tn: "33,134",
+      fp: "6,160",
+      fn: "3,437",
+      tp: "2,408",
     },
     lr_sklearn: {
       name: "Sklearn Logistic Regression",
@@ -158,10 +158,10 @@
       pre: '{{ "%.2f"|format(metrics.lr_sklearn.precision * 100) }}%',
       rec: '{{ "%.2f"|format(metrics.lr_sklearn.recall * 100) }}%',
       f1: '{{ "%.2f"|format(metrics.lr_sklearn.f1 * 100) }}%',
-      tn: "30,844",
-      fp: "14,295",
-      fn: "1,828",
-      tp: "4,103",
+      tn: "27,273",
+      fp: "12,598",
+      fn: "1,648",
+      tp: "3,616",
     },
     lr_manual: {
       name: "Custom Logistic Regression",
@@ -169,10 +169,10 @@
       pre: '{{ "%.2f"|format(metrics.lr_manual.precision * 100) }}%',
       rec: '{{ "%.2f"|format(metrics.lr_manual.recall * 100) }}%',
       f1: '{{ "%.2f"|format(metrics.lr_manual.f1 * 100) }}%',
-      tn: "28,400",
-      fp: "16,739",
-      fn: "1,500",
-      tp: "4,431",
+      tn: "24,553",
+      fp: "14,387",
+      fn: "2,958",
+      tp: "3,244",
     },
   };
 
@@ -228,7 +228,7 @@
             },
           },
           beginAtZero: false,
-          min: 60,
+          min: 50,
           max: 95,
           grid: {
             display: true,

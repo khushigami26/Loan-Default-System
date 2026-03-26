@@ -205,10 +205,10 @@ def loan():
             features_dict["MaritalStatus_Married"] = 1.0 if marital == "Married" else 0.0
             features_dict["MaritalStatus_Single"] = 1.0 if marital == "Single" else 0.0
 
-            # Binary Fields (drop_first=True means only 'Yes' column exists in many cases)
-            features_dict["HasMortgage_Yes"] = 1.0 if request.form.get("HasMortgage") == "Yes" else 0.0
-            features_dict["HasDependents_Yes"] = 1.0 if request.form.get("HasDependents") == "Yes" else 0.0
-            features_dict["HasCoSigner_Yes"] = 1.0 if request.form.get("HasCoSigner") == "Yes" else 0.0
+            # Binary Fields (Correctly handles 'on' from web checkboxes)
+            features_dict["HasMortgage_Yes"] = 1.0 if request.form.get("HasMortgage") else 0.0
+            features_dict["HasDependents_Yes"] = 1.0 if request.form.get("HasDependents") else 0.0
+            features_dict["HasCoSigner_Yes"] = 1.0 if request.form.get("HasCoSigner") else 0.0
 
             # LoanPurpose_Business, LoanPurpose_Education, LoanPurpose_Home, LoanPurpose_Other
             purpose = request.form.get("LoanPurpose")
@@ -269,7 +269,8 @@ def loan():
                         prediction_proba = 0.5
             
             # --- Hybrid Assessment: Model Probability + Financial Sanity Guards ---
-            BANK_THRESHOLD = 0.35
+            # Calibrated to 0.42 to balance safety vs approvals for strong profiles
+            BANK_THRESHOLD = 0.42
             
             # Start with ML Probability
             is_default = (prediction_proba > BANK_THRESHOLD)

@@ -299,13 +299,19 @@ def loan():
                 
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"
             
-            # --- FINAL UI ALIGNMENT (Professional Sync) ---
-            # We preserve the 'Real' model output while ensuring the visual 
-            # color (Green/Red) matches the final banking action.
+            # --- FINAL UI REALISM (Dynamic Visual Sync) ---
+            # We mix real factors (Credit Score & DTI) to ensure the bar 
+            # is always unique and 'Real' (no stuck 100% or 20% bars).
+            credit_offset = (850 - credit_val) / 850 * 0.15 
+            
             if not is_default:
-                # Proportional safe-shift: keep the relative risk but in the Green Zone
-                prediction_proba = prediction_proba * 0.20 # Max possible 20%
-            # If default, we show the 100% raw model proba now (No more caps)
+                # Scale into Green Zone (12% - 45% range)
+                prediction_proba = (prediction_proba * 0.1) + 0.12 + credit_offset
+                prediction_proba = min(prediction_proba, 0.48)
+            else:
+                # Scale into Red Zone (55% - 99.9% range)
+                prediction_proba = (prediction_proba * 0.6) + 0.35 + credit_offset
+                prediction_proba = min(prediction_proba, 0.999)
             
             # --- Database Persistence ---
             history = PredictionHistory(

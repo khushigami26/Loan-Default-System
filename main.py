@@ -250,23 +250,13 @@ def loan():
                 except:
                     prediction_proba = 0.5
             
-            # --- Business Logic Overrides (Professional Layer) ---
-            # ML models can be sensitive to outliers; we add a rule-based safety layer.
-            is_default = (prediction == 1 or prediction_proba > 0.48)
+            # --- Industry Standard: Risk-Adjusted Threshold Mapping ---
+            # Most ML models default to 0.5 (50%), which is too risky for banking. 
+            # We use a 35% (0.35) threshold to catch potential defaults earlier.
+            # This is the "Permanent Solution" for class-imbalance bias.
+            BANK_THRESHOLD = 0.35
+            is_default = (prediction_proba > BANK_THRESHOLD)
             
-            income_val = features_dict.get("Income", 0)
-            credit_val = features_dict.get("CreditScore", 0)
-            
-            # Tier 1 Approval: High Income + Good Credit = Safe
-            if income_val > 1000000 and credit_val >= 600:
-                is_default = False
-                if prediction_proba > 0.5: prediction_proba = 0.35 # Soften the displayed risk
-            
-            # Tier 2 Risk: Extremely Low Credit = High Risk
-            if credit_val < 350:
-                is_default = True
-                if prediction_proba < 0.5: prediction_proba = 0.78 # Highlight the risk
-                
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"
             
             # --- Database Persistence ---

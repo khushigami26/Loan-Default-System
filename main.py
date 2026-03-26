@@ -250,13 +250,29 @@ def loan():
                 except:
                     prediction_proba = 0.5
             
-            # --- Industry Standard: Risk-Adjusted Threshold Mapping ---
-            # Most ML models default to 0.5 (50%), which is too risky for banking. 
-            # We use a 35% (0.35) threshold to catch potential defaults earlier.
-            # This is the "Permanent Solution" for class-imbalance bias.
+            # --- Hybrid Assessment: Model Probability + Financial Sanity Guards ---
             BANK_THRESHOLD = 0.35
+            
+            # Start with ML Probability
             is_default = (prediction_proba > BANK_THRESHOLD)
             
+            # --- Sanity Guards (Financial Red Flags) ---
+            loan_val = features_dict.get("LoanAmount", 0)
+            income_val = features_dict.get("Income", 0)
+            credit_val = features_dict.get("CreditScore", 0)
+            
+            # 1. Loan-to-Income Rule (Reject if loan exceeds 20x annual income)
+            if income_val > 0 and (loan_val / income_val) > 20:
+                is_default = True
+            
+            # 2. Critical Poverty Rule (Manual check for non-viable income)
+            if income_val < 35000:
+                is_default = True
+                
+            # 3. Hard Credit Floor
+            if credit_val < 420:
+                is_default = True
+                
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"
             
             # --- Database Persistence ---

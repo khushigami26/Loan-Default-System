@@ -12,7 +12,8 @@
     <div class="loader-content">
       <div class="spinner-circle"></div>
       <p class="loader-text">Analyzing Risk Profile...</p>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Predicting Loan Default Probability</p>
+      <p id="loader-subtext" style="color: var(--text-muted); font-size: 0.9rem;">Predicting Loan Default Probability
+      </p>
     </div>
   </div>
 
@@ -39,13 +40,13 @@
         <div class="form-group" style="max-width: 500px;">
           <label for="model_type">Select Algorithm</label>
           <select id="model_type" name="model_type" class="form-control">
-            <option value="lr_manual" {% if best_id == 'lr_manual' %}selected{% endif %}>Custom LR - {{
+            <option value="lr_manual" {% if best_id=='lr_manual' %}selected{% endif %}>Custom LR - {{
               "%.2f"|format(metrics.lr_manual.accuracy * 100) }}% Accuracy</option>
-            <option value="dt" {% if best_id == 'dt' %}selected{% endif %}>Decision Tree - {{
+            <option value="dt" {% if best_id=='dt' %}selected{% endif %}>Decision Tree - {{
               "%.2f"|format(metrics.dt.accuracy * 100) }}% Accuracy</option>
-            <option value="rf" {% if best_id == 'rf' %}selected{% endif %}>Random Forest - {{
+            <option value="rf" {% if best_id=='rf' %}selected{% endif %}>Random Forest - {{
               "%.2f"|format(metrics.rf.accuracy * 100) }}% Accuracy</option>
-            <option value="lr_sklearn" {% if best_id == 'lr_sklearn' %}selected{% endif %}>Sklearn LR - {{
+            <option value="lr_sklearn" {% if best_id=='lr_sklearn' %}selected{% endif %}>Sklearn LR - {{
               "%.2f"|format(metrics.lr_sklearn.accuracy * 100) }}% Accuracy</option>
           </select>
         </div>
@@ -225,17 +226,31 @@
     const form = document.querySelector('form');
     const btn = document.getElementById('analyze-btn');
     const overlay = document.getElementById('loading-overlay');
-    const text = btn.querySelector('.btn-text');
-    const loader = btn.querySelector('.btn-loader');
+    const subtext = document.getElementById('loader-subtext');
 
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function (e) {
+      if (form.getAttribute('data-submitted') === 'true') {
+        return;
+      }
+
+      e.preventDefault();
+
       overlay.classList.add('active');
+      btn.classList.add('loading');
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
 
       setTimeout(() => {
-        btn.classList.add('loading');
-        btn.style.opacity = '0.8';
-        btn.style.pointerEvents = 'none';
-      }, 50);
+        if (overlay.classList.contains('active')) {
+          subtext.style.color = '#f59e0b';
+          subtext.textContent = 'Initial model activation takes a moment on Render...';
+        }
+      }, 8000);
+
+      setTimeout(() => {
+        form.setAttribute('data-submitted', 'true');
+        form.submit();
+      }, 400);
     });
   });
 </script>

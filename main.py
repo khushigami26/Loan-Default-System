@@ -266,8 +266,8 @@ def loan():
             loan_val = float(request.form.get("LoanAmount", 0))
             income_val = float(request.form.get("Income", 0))
             credit_val = float(request.form.get("CreditScore", 0))
-           
-            if income_val >= 1000000 and credit_val >= 550:
+          
+            if income_val >= 1000000 and credit_val >= 400:
                 is_default = False
             
             if income_val > 0 and (loan_val / income_val) > 20:
@@ -276,7 +276,7 @@ def loan():
             if income_val < 35000:
                 is_default = True
                 
-            if credit_val < 420:
+            if credit_val < 380:
                 is_default = True
                 
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"

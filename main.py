@@ -69,7 +69,6 @@ def loan_default_dashboard():
     not_default_pct = target.get("not_default_percent", 0.0)
     default_pct = target.get("default_percent", 0.0)
 
-    # Classification Metrics Mapping
     model_metrics = {}
     for m_id, m_data in models.items():
         model_metrics[m_id] = {
@@ -134,7 +133,6 @@ def loan_default_feature_insights():
 @main.route("/loan", methods=["GET", "POST"])
 @login_required
 def loan():
-    # Check if any specialized models are loaded
     models = getattr(current_app, 'ml_models', {})
     if not models:
         return "Model not loaded. Check model file."
@@ -153,7 +151,6 @@ def loan():
         'HasCoSigner_Yes'
     ]
     
-    # Classification Metrics Mapping
     metrics = {}
     for m_id, m_data in models_metadata.items():
         metrics[m_id] = {
@@ -186,32 +183,29 @@ def loan():
                         flash(f"Invalid numeric value for: {f}", "error")
                         return render_template("loan_form.html", **context)
 
-            # Encode categorical features manually based on the model's dummy columns
-            # Values that were 'dropped' during training (first category alphabetically) are implicit
             
-            # Education_High School, Education_Master's, Education_PhD
             edu = request.form.get("Education")
             features_dict["Education_High School"] = 1.0 if edu == "High School" else 0.0
             features_dict["Education_Master's"] = 1.0 if edu == "Master's" else 0.0
             features_dict["Education_PhD"] = 1.0 if edu == "PhD" else 0.0
 
-            # EmploymentType_Part-time, EmploymentType_Self-employed, EmploymentType_Unemployed
+            # EmploymentType
             emp = request.form.get("EmploymentType")
             features_dict["EmploymentType_Part-time"] = 1.0 if emp == "Part-time" else 0.0
             features_dict["EmploymentType_Self-employed"] = 1.0 if emp == "Self-employed" else 0.0
             features_dict["EmploymentType_Unemployed"] = 1.0 if emp == "Unemployed" else 0.0
 
-            # MaritalStatus_Married, MaritalStatus_Single
+            # MaritalStatus
             marital = request.form.get("MaritalStatus")
             features_dict["MaritalStatus_Married"] = 1.0 if marital == "Married" else 0.0
             features_dict["MaritalStatus_Single"] = 1.0 if marital == "Single" else 0.0
 
-            # Binary Fields (Correctly handles 'on' from web checkboxes)
+            # Binary Fields 
             features_dict["HasMortgage_Yes"] = 1.0 if request.form.get("HasMortgage") else 0.0
             features_dict["HasDependents_Yes"] = 1.0 if request.form.get("HasDependents") else 0.0
             features_dict["HasCoSigner_Yes"] = 1.0 if request.form.get("HasCoSigner") else 0.0
 
-            # LoanPurpose_Business, LoanPurpose_Education, LoanPurpose_Home, LoanPurpose_Other
+            # LoanPurpose
             purpose = request.form.get("LoanPurpose")
             features_dict["LoanPurpose_Business"] = 1.0 if purpose == "Business" else 0.0
             features_dict["LoanPurpose_Education"] = 1.0 if purpose == "Education" else 0.0
@@ -229,10 +223,8 @@ def loan():
             }
             model_name = model_mapping.get(model_type, "Selected Model")
             
-            # Prepare inference data (Pipeline will handle scaling automatically)
             features_df = pd.DataFrame([ordered_values], columns=feature_names)
             
-            # Select the correct loaded engine
             chosen_engine = current_app.ml_models.get(model_type)
             if not chosen_engine:
                 chosen_engine = getattr(current_app, "ml_model", None)
@@ -243,24 +235,18 @@ def loan():
                 
             # Perform Prediction
             if isinstance(chosen_engine, dict) and chosen_engine.get('type') == 'manual_logistic_numpy':
-                # Manual Dot Product Math (NumPy implementation)
                 weights = chosen_engine.get('weights')
                 bias = chosen_engine.get('bias')
                 
-                # Apply scaling (Manual model expects scaled data)
                 features_scaled = current_app.scaler.transform(features_df)
                 
-                # Equation: z = sum(w*x) + b
                 z = np.dot(features_scaled, weights) + bias
                 
-                # Activation: sigmoid(z) = 1 / (1 + e^-z)
                 prediction_proba = float(1 / (1 + np.exp(-z[0])))
                 prediction = 1 if prediction_proba >= 0.5 else 0
             else:
-                # Standard Scikit-Learn prediction
                 prediction = int(chosen_engine.predict(features_df)[0])
                 
-                # Get Probability with robust handling
                 prediction_proba = 0.5
                 if hasattr(chosen_engine, "predict_proba"):
                     try:
@@ -269,52 +255,40 @@ def loan():
                     except:
                         prediction_proba = 0.5
             
-            # --- Hybrid Assessment: Model Probability + Financial Sanity Guards ---
-            # Calibrated to 0.50 for the high-accuracy custom model
+           
             BANK_THRESHOLD = 0.50
             
-            # Start with ML Probability
             is_default = (prediction_proba > BANK_THRESHOLD)
             
-            # --- Sanity Guards & Affluence Overrides ---
             loan_val = float(request.form.get("LoanAmount", 0))
             income_val = float(request.form.get("Income", 0))
             credit_val = float(request.form.get("CreditScore", 0))
-            
-            # 1. Professional Override: High-Net-Worth Individuals (Strong stability)
-            # If income is > 1M and they have Fair-to-Good credit, we override ML skepticism
+           
             if income_val >= 1000000 and credit_val >= 550:
                 is_default = False
             
-            # 2. Strict Loan-to-Income Rule (Still reject if loan is > 20x annual income)
             if income_val > 0 and (loan_val / income_val) > 20:
                 is_default = True
             
-            # 3. Critical Poverty Rule (Manual check for non-viable income < 35k)
             if income_val < 35000:
                 is_default = True
                 
-            # 4. Hard Credit Floor (Reject under 420 regardless of income)
             if credit_val < 420:
                 is_default = True
                 
             result = "Risk of Default \u274C" if is_default else "Loan Approved \u2705"
             
-            # --- FINAL UI REALISM (Dynamic Visual Jitter) ---
-            # Unique noise ensures no two results look the same (no static 99.4% or 20% bars)
+         
             credit_offset = (850 - credit_val) / 850 * 0.15 
             jitter = random.uniform(-0.05, 0.05)
             
             if not is_default:
-                # Range: ~10% to ~45% with unique jitter
                 prediction_proba = (prediction_proba * 0.1) + 0.15 + credit_offset + jitter
                 prediction_proba = max(0.08, min(prediction_proba, 0.49))
             else:
-                # Range: ~55% to ~99.8% with unique jitter
                 prediction_proba = (prediction_proba * 0.5) + 0.40 + credit_offset + jitter
                 prediction_proba = max(0.51, min(prediction_proba, 0.998))
             
-            # --- Database Persistence ---
             history = PredictionHistory(
                 user_id=current_user.pk,
                 loan_amount=features_dict.get("LoanAmount", 0),

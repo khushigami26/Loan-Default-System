@@ -20,8 +20,8 @@ def create_app():
     app.config["SECRET_KEY"] = secret_key
 
     # Session security
-    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)  # protect cookies
-    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")  # prevent CSRF
+    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)  
+    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax") 
     if os.environ.get("RENDER") is not None:
         app.config.setdefault("SESSION_COOKIE_SECURE", True)
 
@@ -75,7 +75,6 @@ def create_app():
         "lr_manual": "lr_manual_model.pkl",
     }
 
-    # Load specific model files with individual error handling for better resilience on Render
     for model_id, filename in model_files.items():
         path = os.path.join(MODEL_DIR, filename)
         if os.path.exists(path):
@@ -85,11 +84,9 @@ def create_app():
             except Exception as e:
                 print(f"CRITICAL: Failed to load {model_id} from {filename}: {e}")
     
-    # Check if we have at least one valid model
     if not app.ml_models:
         print("CRITICAL NOTIFICATION: No models were successfully loaded into memory!")
     
-    # Fallback for loan_model.pkl (Absolute Legacy/Local Fallback)
     main_path = os.path.join(MODEL_DIR, "loan_model.pkl")
     if os.path.exists(main_path):
         try:
@@ -100,7 +97,6 @@ def create_app():
                 print("Using legacy loan_model.pkl as primary fallback.")
         except Exception:
             app.ml_model = None
-    # Load Scaler (Required for Manual Model Inference)
     scaler_path = os.path.join(MODEL_DIR, "scaler.pkl")
     if os.path.exists(scaler_path):
         try:

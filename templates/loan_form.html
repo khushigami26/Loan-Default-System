@@ -39,14 +39,14 @@
         <div class="form-group" style="max-width: 500px;">
           <label for="model_type">Select Algorithm</label>
           <select id="model_type" name="model_type" class="form-control">
-            <option value="rf" {% if best_id == 'rf' %}selected{% endif %}>Random Forest - {{
-              "%.2f"|format(metrics.rf.accuracy * 100) }}% Accuracy</option>
-            <option value="dt" {% if best_id == 'dt' %}selected{% endif %}>Decision Tree - {{
-              "%.2f"|format(metrics.dt.accuracy * 100) }}% Accuracy</option>
-            <option value="lr_sklearn" {% if best_id == 'lr_sklearn' %}selected{% endif %}>Sklearn LR - {{
-              "%.2f"|format(metrics.lr_sklearn.accuracy * 100) }}% Accuracy</option>
             <option value="lr_manual" {% if best_id == 'lr_manual' %}selected{% endif %}>Custom LR - {{
               "%.2f"|format(metrics.lr_manual.accuracy * 100) }}% Accuracy</option>
+            <option value="dt" {% if best_id == 'dt' %}selected{% endif %}>Decision Tree - {{
+              "%.2f"|format(metrics.dt.accuracy * 100) }}% Accuracy</option>
+            <option value="rf" {% if best_id == 'rf' %}selected{% endif %}>Random Forest - {{
+              "%.2f"|format(metrics.rf.accuracy * 100) }}% Accuracy</option>
+            <option value="lr_sklearn" {% if best_id == 'lr_sklearn' %}selected{% endif %}>Sklearn LR - {{
+              "%.2f"|format(metrics.lr_sklearn.accuracy * 100) }}% Accuracy</option>
           </select>
         </div>
       </div>

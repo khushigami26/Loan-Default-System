@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 import os
 import json
 import pandas as pd
+import numpy as np
+import joblib
 import warnings
 
 main = Blueprint('main', __name__)
@@ -239,16 +241,32 @@ def loan():
                 return render_template("loan_form.html", **context)
                 
             # Perform Prediction
-            prediction = int(chosen_engine.predict(features_df)[0])
-            
-            # Get Probability with robust handling
-            prediction_proba = 0.5
-            if hasattr(chosen_engine, "predict_proba"):
-                try:
-                    probs = chosen_engine.predict_proba(features_df)[0]
-                    prediction_proba = float(probs[1]) 
-                except:
-                    prediction_proba = 0.5
+            if isinstance(chosen_engine, dict) and chosen_engine.get('type') == 'manual_logistic_numpy':
+                # Manual Dot Product Math (NumPy implementation)
+                weights = chosen_engine.get('weights')
+                bias = chosen_engine.get('bias')
+                
+                # Apply scaling (Manual model expects scaled data)
+                features_scaled = current_app.scaler.transform(features_df)
+                
+                # Equation: z = sum(w*x) + b
+                z = np.dot(features_scaled, weights) + bias
+                
+                # Activation: sigmoid(z) = 1 / (1 + e^-z)
+                prediction_proba = float(1 / (1 + np.exp(-z[0])))
+                prediction = 1 if prediction_proba >= 0.5 else 0
+            else:
+                # Standard Scikit-Learn prediction
+                prediction = int(chosen_engine.predict(features_df)[0])
+                
+                # Get Probability with robust handling
+                prediction_proba = 0.5
+                if hasattr(chosen_engine, "predict_proba"):
+                    try:
+                        probs = chosen_engine.predict_proba(features_df)[0]
+                        prediction_proba = float(probs[1]) 
+                    except:
+                        prediction_proba = 0.5
             
             # --- Hybrid Assessment: Model Probability + Financial Sanity Guards ---
             BANK_THRESHOLD = 0.35

@@ -81,16 +81,27 @@
           <i class="fas fa-brain" style="color: #6366f1"></i> AI Risk Factors & Insights
         </div>
 
-        {# Credit Score Segment #}
         <div class="insight-item">
           {% set cs = features.get('CreditScore', 0) %}
-          {% if cs >= 700 %}
+          {% if cs >= 800 %}
+            <div class="insight-icon positive"><i class="fas fa-certificate"></i></div>
+            <div class="insight-content">
+              <h4>Exceptional Credit Score</h4>
+              <p>Your score of <b>{{ cs|int }}</b> is in the highest bracket, indicating superior financial reliability.</p>
+            </div>
+          {% elif cs >= 740 %}
             <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
             <div class="insight-content">
-              <h4>Excellent Credit Score</h4>
-              <p>Your score of <b>{{ cs|int }}</b> is strong, significantly reducing overall default risk.</p>
+              <h4>Very Good Credit Score</h4>
+              <p>A score of <b>{{ cs|int }}</b> is significantly above the average, demonstrating high stability.</p>
             </div>
-          {% elif cs >= 600 %}
+          {% elif cs >= 670 %}
+            <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
+            <div class="insight-content">
+              <h4>Good Credit Score</h4>
+              <p>Your score of <b>{{ cs|int }}</b> is considered solid and safe for long-term credit products.</p>
+            </div>
+          {% elif cs >= 580 %}
             <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
             <div class="insight-content">
               <h4>Fair Credit Score</h4>
@@ -99,8 +110,8 @@
           {% else %}
             <div class="insight-icon negative"><i class="fas fa-exclamation-circle"></i></div>
             <div class="insight-content">
-              <h4>Low Credit Score</h4>
-              <p>Score of <b>{{ cs|int }}</b> is below recommended thresholds, increasing the risk weight for this profile.</p>
+              <h4>Poor Credit Score</h4>
+              <p>Score of <b>{{ cs|int }}</b> is below the 580 threshold, which may present obstacles in obtaining standard credit rates.</p>
             </div>
           {% endif %}
         </div>
@@ -108,13 +119,13 @@
         {# Income Segment #}
         <div class="insight-item">
           {% set inc = features.get('Income', 0) %}
-          {% if inc >= 80000 %}
+          {% if inc >= 500000 %}
             <div class="insight-icon positive"><i class="fas fa-check-circle"></i></div>
             <div class="insight-content">
               <h4>Robust Annual Income</h4>
               <p>Annual income of <b>&#8377; {{ "{:,.0f}".format(inc) }}</b> provides a substantial safety net for repayment.</p>
             </div>
-          {% elif inc >= 40000 %}
+          {% elif inc >= 200000 %}
             <div class="insight-icon neutral"><i class="fas fa-info-circle"></i></div>
             <div class="insight-content">
               <h4>Moderate Annual Income</h4>

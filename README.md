@@ -74,19 +74,19 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 
 | Model | Accuracy | Status |
 |---|---|---|
-| ✅ Custom Logistic Regression | **87.84%** | **Best Model** |
-| Random Forest Classifier | 73.07% | — |
-| Sklearn Logistic Regression | 67.86% | — |
-| Decision Tree Classifier | 66.82% | — |
+| ✅ Custom Logistic Regression | **88.47%** | **Best Model** |
+| Decision Tree Classifier | 77.06% | — |
+| Random Forest Classifier | 76.59% | — |
+| Sklearn Logistic Regression | 68.74% | — |
 
 **Best Model Metrics (Custom Logistic Regression):**
 
 | Metric | Value |
 |---|---|
-| Accuracy | 87.84% |
-| Precision | 49.8% |
-| Recall | 90.5% |
-| F1 Score | 64.3% |
+| Accuracy | 88.47% |
+| Precision | 50.1% |
+| Recall | 5.2% |
+| F1 Score | 9.4% |
 
 ---
 
@@ -95,9 +95,10 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 | Property | Value |
 |---|---|
 | Original Records | 255,347 |
-| After Cleaning | 225,694 |
-| Features Used | 16 |
+| After Cleaning | 225,694 (29,653 duplicates/NaN removed) |
+| Features Used | 24 (16 raw + 8 encoded) |
 | Target Variable | `LoanStatus` (0 = No Default, 1 = Default) |
+| Class Balance | 88.4% No Default / 11.6% Default |
 | Train / Test Split | 80% / 20% (Stratified) |
 
 **Preprocessing Steps:**
@@ -110,8 +111,11 @@ The **Loan Default Prediction System** is an AI-powered web platform that helps 
 ```
 Age, Income, LoanAmount, CreditScore, MonthsEmployed,
 NumCreditLines, InterestRate, LoanTerm, DTIRatio,
-HasMortgage, HasDependents, HasCoSigner,
-Education, EmploymentType, MaritalStatus, LoanPurpose
+Education (High School, Master's, PhD), 
+EmploymentType (Part-time, Self-employed, Unemployed),
+MaritalStatus (Married, Single), 
+LoanPurpose (Business, Education, Home, Other),
+HasMortgage, HasDependents, HasCoSigner
 ```
 
 ---
